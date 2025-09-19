@@ -160,6 +160,9 @@ size_t get_length(std::shared_ptr<parquet::arrow::FileReader> reader) {
     return res;
 }
 
+// parquet to csv conversion with multithreading (producer-consumer model)
+// each thread processes batches_per_chunk batches
+// when a thread has processed its chunk, it writes it to a csv file and goes for the next chunk in the queue
 std::vector<std::string> parquet_to_csv(const std::string& parquet_file, const std::string& output_file, const size_t batches_per_chunk = 2, const bool merging = true) {
     auto total_start = high_resolution_clock::now();
     try {
@@ -170,26 +173,26 @@ std::vector<std::string> parquet_to_csv(const std::string& parquet_file, const s
         PARQUET_ASSIGN_OR_THROW(reader, parquet::arrow::OpenFile(infile, arrow::default_memory_pool()));
         reader->set_use_threads(true);
 
-        auto start_length = high_resolution_clock::now();
+        /*auto start_length = high_resolution_clock::now();
         const size_t length = get_length(reader);
         auto end_length = high_resolution_clock::now();
 
-        auto total_end = high_resolution_clock::now();
         std::cout << "get_length = " << length <<" | time: " <<
-            duration_cast<milliseconds>(end_length - start_length) << std::endl;
+            duration_cast<milliseconds>(end_length - start_length) << std::endl;*/
 
 
         std::shared_ptr<arrow::RecordBatchReader> batch_reader;
         PARQUET_ASSIGN_OR_THROW(batch_reader, reader->GetRecordBatchReader());
 
 
-        ChunkQueue queue(50);
+		ChunkQueue queue(50); // max 50 chunks in the queue for memory purpose
         std::atomic<int> chunk_id_counter{ 0 };
         const int num_writer_threads = std::thread::hardware_concurrency();
         std::vector<std::thread> writer_threads;
         std::vector<std::string> chunk_files;
         std::mutex chunk_files_mutex;
 
+		// starting writer threads
         for (int i = 0; i < num_writer_threads; i++) {
             writer_threads.emplace_back([&]() {
                 while (true) {
@@ -209,7 +212,6 @@ std::vector<std::string> parquet_to_csv(const std::string& parquet_file, const s
                 });
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////
 
         // Producer
         std::vector<std::shared_ptr<arrow::RecordBatch>> current_batches;
@@ -232,8 +234,6 @@ std::vector<std::string> parquet_to_csv(const std::string& parquet_file, const s
             queue.push(BatchChunk{ chunk_id, std::move(current_batches) });
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////
-
         queue.set_finished();
 
         // waiting for writers to finish
@@ -243,7 +243,7 @@ std::vector<std::string> parquet_to_csv(const std::string& parquet_file, const s
         std::cout << "Splitting done in " <<
             duration_cast<milliseconds>(split_end - total_start) << std::endl;
 
-        // merging
+        // handling merge
         if (merging) {
             merge_csv_files(chunk_files, output_file);
 

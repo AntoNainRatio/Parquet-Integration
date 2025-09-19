@@ -55,16 +55,8 @@ private:
     bool finished_ = false;
 };
 
-int main(int argc, char** argv) {
 
-    if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <input.parquet> <output.csv>" << std::endl;
-        return 1;
-    }
-
-    const std::string input_file = argv[1];
-    const std::string output_file = argv[2];
-
+int parquet_to_csv(const std::string& input_file, const std::string& output_file) {
     try {
         auto start = high_resolution_clock::now();
 
@@ -131,6 +123,18 @@ int main(int argc, char** argv) {
         std::cerr << "Error ParquetToCsv : " << e.what() << std::endl;
         return 1;
     }
-
     return 0;
+}
+
+int main(int argc, char** argv) {
+
+    if (argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <input_file> <output_file>" << std::endl;
+        return 1;
+    }
+
+    const std::string input_file = argv[1];
+    const std::string output_file = argv[2];
+
+	return parquet_to_csv(input_file, output_file);
 }

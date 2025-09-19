@@ -18,7 +18,6 @@
 
 namespace fs = std::filesystem;
 
-// ------------------------ Queue bornée ------------------------
 class BatchQueue {
 public:
     BatchQueue(size_t max_size) : max_size_(max_size) {}
@@ -59,14 +58,14 @@ private:
     bool finished_ = false;
 };
 
-// ------------------------ Logger thread-safe ------------------------
+// thread-safe logging
 std::mutex log_mutex;
 void log(const std::string& msg) {
     std::lock_guard<std::mutex> lock(log_mutex);
     std::cout << msg << std::endl;
 }
 
-// ------------------------ Écriture d'un batch en CSV ------------------------
+// worker function to write a batch to a CSV file
 void write_batch_to_csv(std::shared_ptr<arrow::RecordBatch> batch,
     const std::string& filename,
     bool write_header) {
@@ -90,7 +89,7 @@ void write_batch_to_csv(std::shared_ptr<arrow::RecordBatch> batch,
     // log("Done " + filename);
 }
 
-// Fonction affichage de la liste de fichiers
+// dump the list of files (for debugging)
 void dump_files(const std::vector<std::string>& batch_files) {
 	log("Batch files:");
     for (const auto& file : batch_files) {
@@ -99,7 +98,7 @@ void dump_files(const std::vector<std::string>& batch_files) {
 	log("End of batch files");
 }
 
-// Fonction utilitaire pour extraire l’index du batch
+// get index from filename "batch_i.csv"
 int extract_batch_index(const std::string& filename) {
     std::regex re("batch_(\\d+)\\.csv");
     std::smatch match;
@@ -109,7 +108,7 @@ int extract_batch_index(const std::string& filename) {
     return -1;
 }
 
-// ------------------------ Fusion des CSV en un seul ------------------------
+// merge CSV files into a single output file
 void merge_csv_files(std::vector<std::string> batch_files,
     const std::string& output_file) {
 
@@ -146,19 +145,12 @@ void merge_csv_files(std::vector<std::string> batch_files,
     std::cout << "Merge done in " << merge_ms << " ms" << std::endl;
 }
 
-// ------------------------ Main Conversion ------------------------
-int main(int argc, char** argv) {
-    if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <input.parquet> <output.csv>\n";
-        return 1;
-    }
 
-    const std::string parquet_file = argv[1];
-    const std::string output_file = argv[2];
 
-    auto total_start = std::chrono::high_resolution_clock::now();
-
+int parquet_to_csv(const std::string& parquet_file, const std::string& output_file, const bool merging) {
     try {
+        auto total_start = std::chrono::high_resolution_clock::now();
+
         // Ouvrir le Parquet
         std::shared_ptr<arrow::io::ReadableFile> infile;
         PARQUET_ASSIGN_OR_THROW(infile, arrow::io::ReadableFile::Open(parquet_file));
@@ -170,7 +162,7 @@ int main(int argc, char** argv) {
         std::shared_ptr<arrow::RecordBatchReader> batch_reader;
         PARQUET_ASSIGN_OR_THROW(batch_reader, reader->GetRecordBatchReader());
 
-        // --- Queue bornée et pool de writers
+		// init queue and threads
         BatchQueue queue(50);
         std::atomic<int> batch_id_counter{ 0 };
         const int num_writer_threads = std::thread::hardware_concurrency();
@@ -198,7 +190,7 @@ int main(int argc, char** argv) {
                 });
         }
 
-        // Producteur
+        // producer
         while (true) {
             std::shared_ptr<arrow::RecordBatch> batch;
             PARQUET_ASSIGN_OR_THROW(batch, batch_reader->Next());
@@ -210,18 +202,34 @@ int main(int argc, char** argv) {
 
         for (auto& t : writer_threads) t.join();
 
-        // --- Fusion finale avec chrono
-         merge_csv_files(batch_files, output_file);
+        // handing merge
+        if (merging) merge_csv_files(batch_files, output_file);
 
         auto total_end = std::chrono::high_resolution_clock::now();
         auto total_ms = std::chrono::duration_cast<std::chrono::milliseconds>(total_end - total_start).count();
         std::cout << "Total execution time: " << total_ms << " ms" << std::endl;
+
+        return 0;
 
     }
     catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }
+}
 
-    return 0;
+// ------------------------ Main Conversion ------------------------
+int main(int argc, char** argv) {
+    if (argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <input.parquet> <output.csv>\n";
+        return 1;
+    }
+
+    const std::string parquet_file = argv[1];
+    const std::string output_file = argv[2];
+
+	const bool merging = false;
+
+
+    return parquet_to_csv(parquet_file, output_file, merging);
 }

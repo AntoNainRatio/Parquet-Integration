@@ -16,7 +16,7 @@ find_package(Arrow REQUIRED)
 find_package(Parquet REQUIRED)
 
 # Ajoutez une source à l'exécutable de ce projet.
-add_executable (ParquetToCsv  "MultiSplitByNRowGroup.cpp" "ParquetToCsv.h")
+add_executable (ParquetToCsv  "Multi.cpp" "ParquetToCsv.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET ParquetToCsv PROPERTY CXX_STANDARD 20)

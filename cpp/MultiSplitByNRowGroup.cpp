@@ -25,7 +25,6 @@ struct RowGroupJob {
     int job_id;
 };
 
-// ---------------- Thread-safe queue ----------------
 class JobQueue {
 public:
     void push(const RowGroupJob& job) {
@@ -63,7 +62,7 @@ void log(const std::string& msg) {
     std::cout << msg << std::endl;
 }
 
-// ---------------- Worker ----------------
+// worker processing jobs from the queue
 void worker(std::shared_ptr<arrow::io::ReadableFile> infile, JobQueue& queue, std::vector<std::string>& chunk_files, std::mutex& chunk_mutex) {
     while (true) {
         RowGroupJob job;
@@ -146,7 +145,10 @@ void merge_csv_files(std::vector<std::string>& chunk_files, const std::string& o
     std::cout << "Merge done in " << duration_cast<milliseconds>(merge_end - merge_start) << std::endl;
 }
 
-// ---------------- parquetToCsv ----------------
+// Conversion Parquet -> CSV with multithreading
+// each thread processes several row groups
+// row_groups per thread is set by total_row_groups / num_threads
+// this way work is divided by number of threads available
 std::vector<std::string> parquetToCsv(const std::string& parquet_file, const std::string& output_file,bool merging = true) {
     auto total_start = high_resolution_clock::now();
 
@@ -169,7 +171,7 @@ std::vector<std::string> parquetToCsv(const std::string& parquet_file, const std
         
         int extra = total_row_groups % num_threads;
 
-        // Créer les jobs
+        // managing jobs and row_groups
         JobQueue queue;
         int job_id = 0;
 
@@ -187,12 +189,14 @@ std::vector<std::string> parquetToCsv(const std::string& parquet_file, const std
         std::vector<std::thread> threads;
         std::mutex chunk_mutex;
 
+		// starting worker threads
         for (int i = 0; i < num_threads; i++) {
             threads.emplace_back(worker, infile, std::ref(queue), std::ref(chunk_files), std::ref(chunk_mutex));
         }
 
         queue.set_finished();
 
+		// waiting for all threads to finish
         for (auto& t : threads) t.join();
 
         if (merging) merge_csv_files(chunk_files, output_file);

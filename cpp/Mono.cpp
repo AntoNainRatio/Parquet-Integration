@@ -10,20 +10,11 @@
 
 using namespace std::chrono;
 
-int main(int argc, char** argv) {
-
-    auto start = high_resolution_clock::now();
-
-    if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <input.parquet> <output.csv>" << std::endl;
-        return 1;
-    }
-
-    const std::string input_file = argv[1];
-    const std::string output_file = argv[2];
-
+int parquet_to_csv(const std::string & input_file, const std::string & output_file) {
     try {
-        // --- Ouvrir le fichier Parquet
+		auto start = high_resolution_clock::now();
+
+		// open the parquet file
         std::shared_ptr<arrow::io::ReadableFile> infile;
         PARQUET_ASSIGN_OR_THROW(
             infile, arrow::io::ReadableFile::Open(input_file));
@@ -35,7 +26,7 @@ int main(int argc, char** argv) {
 
         reader->set_use_threads(true);
 
-        // --- Préparer le fichier CSV de sortie
+		// open output CSV file
         std::shared_ptr<arrow::io::OutputStream> outfile;
         auto outfile_res = arrow::io::FileOutputStream::Open(output_file);
         if (!outfile_res.ok()) {
@@ -46,16 +37,16 @@ int main(int argc, char** argv) {
 
 
         auto write_options = arrow::csv::WriteOptions::Defaults();
-        write_options.include_header = true; // écrire l'entête une seule fois
+		write_options.include_header = true;
 
         bool header_written = false;
 
-        // --- Parcourir les row groups un par un
+		// process each row group
         for (int rg = 0; rg < reader->num_row_groups(); rg++) {
             std::shared_ptr<arrow::Table> table;
             PARQUET_THROW_NOT_OK(reader->RowGroup(rg)->ReadTable(&table));
 
-            //On écrit l'entête uniquement sur le premier batch
+			// write header only for the first row group
             if (!header_written) {
                 write_options.include_header = true;
                 header_written = true;
@@ -80,4 +71,17 @@ int main(int argc, char** argv) {
     }
 
     return 0;
+}
+
+// ------------------------ Main Conversion ------------------------
+int main(int argc, char** argv) {
+    if (argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <input.parquet> <output.csv>\n";
+        return 1;
+    }
+
+    const std::string parquet_file = argv[1];
+    const std::string output_file = argv[2];
+
+    return parquet_to_csv(parquet_file, output_file);
 }
