@@ -302,6 +302,50 @@ if __name__ == "__main__":
 
 
     ########################################################
+    ##########      Accidents Very Heavy       #############
+    ########################################################
+
+    dirname = "AccidentsVeryHeavy"
+    path_to_dir = os.path.join(kh.get_samples_dir(),dirname)
+
+    dictionary_filepath = os.path.join(path_to_dir, "Accidents.kdic")
+    dictionary_name = "Accident"
+    
+    data_table_filename_no_ext = "Accidents"
+
+    places_data_file_csv = os.path.join(path_to_dir, "Places.txt")
+    places_data_file_parquet = os.path.join(path_to_dir, "Places.parquet")
+    print(f"places data table: {places_data_file_csv}")
+    print("")
+
+    users_data_file_csv = os.path.join(path_to_dir, "Users_veryheavy.txt")
+    users_data_file_parquet = os.path.join(path_to_dir, "Users_veryheavy.parquet")
+    print(f"Users data table: {users_data_file_csv}")
+    print("")
+
+    vehicles_data_file_csv = os.path.join(path_to_dir, "Vehicles.txt")
+    vehicles_data_file_parquet = os.path.join(path_to_dir, "Vehicles.parquet")
+    print(f"Vehicles data table: {vehicles_data_file_csv}")
+    print("")
+
+    additional_data_tables_csv={
+        "Accident`Vehicles": vehicles_data_file_csv,
+        "Accident`Vehicles`Users":  users_data_file_csv,
+        "Accident`Place": places_data_file_csv,
+    }
+
+    additional_data_tables_parquet={
+        "Accident`Vehicles": vehicles_data_file_parquet,
+        "Accident`Vehicles`Users":  users_data_file_parquet,
+        "Accident`Place": places_data_file_parquet,
+    }
+
+    target_variable = "Gravity"
+
+    number_of_calls = 1
+
+
+    ########################################################
     ################     END OF ARGS        ################
     ########################################################
 
