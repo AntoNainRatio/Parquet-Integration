@@ -16,7 +16,7 @@ find_package(Arrow REQUIRED)
 find_package(Parquet REQUIRED)
 
 # Ajoutez une source à l'exécutable de ce projet.
-add_library (khiopsdriver_parquet "khiopsdriver_parquet.cpp" "khiopsdriver_parquet.h" "multifile.h")
+add_library (khiopsdriver_parquet "khiopsdriver_parquet.cpp" "khiopsdriver_parquet.h" "multifile.h" "globbing.h" "file_finder.cpp" "file_finder.h" "parquet_to_csv.cpp" "parquet_to_csv.h")
 add_executable (main "main.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

@@ -80,8 +80,8 @@ extern "C"
 	// returns the error message.
 
 	// TODO: 
-	// VISIBLE MultiFile* driver_fopen(const char* globbing, char mode);
-	VISIBLE MultiFile* driver_fopen(std::vector<const char*> filenames, char mode);
+	//VISIBLE MultiFile* driver_fopen_glob(const char* globbing, char mode);
+	VISIBLE MultiFile* driver_fopen(const char* parquet, char mode);
 
 	// Returns 0 on success, EOF on error
 	VISIBLE int driver_fclose(void* multifile);

@@ -1,0 +1,1 @@
+std::vector<std::string> parquetToCsv(const char* parquet_file);

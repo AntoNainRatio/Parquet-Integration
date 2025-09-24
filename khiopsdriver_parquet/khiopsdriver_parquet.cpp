@@ -4,6 +4,8 @@
 #endif
 
 #include "khiopsdriver_parquet.h"
+#include "file_finder.h"
+#include "parquet_to_csv.h"
 
 #if defined(__linux__) || defined(__APPLE__)
 #define __linux_or_apple__
@@ -185,7 +187,7 @@ long long int driver_getFileSize(MultiFile* multifile)
 	return multifile->total_size;
 }
 
-long long int driver_getSingleFileSize(const char* filename)
+long long int driver_getSingleFileSize(std::string filename)
 {
 	long long int filesize;
 	int nError;
@@ -193,7 +195,7 @@ long long int driver_getSingleFileSize(const char* filename)
 	// Pour les fichiers de plus de 4 Go, il existe une API speciale (stat64...)
 #if defined _WIN32
 	struct __stat64 fileStat;
-	nError = _stat64(getFilePath(filename), &fileStat);
+	nError = _stat64(getFilePath(filename.c_str()), &fileStat);
 #elif defined(__APPLE__)
 	struct stat fileStat;
 	nError = stat(getFilePath(filename), &fileStat);
@@ -211,8 +213,13 @@ long long int driver_getSingleFileSize(const char* filename)
 	return filesize;
 }
 
+//MultiFile* driver_fopen_glob(const char* globbing, char mode) {
+//	std::vector<const char*> filenames = get_matching_files(globbing);
+//	return driver_fopen(filenames, mode);
+//}
 
-MultiFile* driver_fopen(std::vector<const char*> filenames, char mode) {
+MultiFile* driver_fopen(const char* parquet, char mode) {
+	std::vector<std::string> filenames = parquetToCsv(parquet);
 	MultiFile* multifile = new MultiFile();
 
 	if (filenames.size() == 0) {
@@ -229,7 +236,7 @@ MultiFile* driver_fopen(std::vector<const char*> filenames, char mode) {
 
 	multifile->filenames = filenames;
 
-	for (const char* filename : filenames) {
+	for (std::string filename : filenames) {
 		long long int filesize = driver_getSingleFileSize(filename);
 		if (filesize < 0) {
 			multifile->error_state = MultiFileError::OPEN_FAILED;
@@ -240,7 +247,7 @@ MultiFile* driver_fopen(std::vector<const char*> filenames, char mode) {
 		multifile->total_size += filesize;
 	}
 
-	FILE* handle = std::fopen(getFilePath(filenames[0]), "rb");
+	FILE* handle = std::fopen(getFilePath(filenames[0].c_str()), "rb");
 	if (handle == nullptr) {
 		multifile->error_state = MultiFileError::OPEN_FAILED;
 		return multifile;
@@ -291,7 +298,7 @@ long long int driver_fread(void* ptr, size_t size, size_t count, void* multifile
 				std::fclose(multifile->current_handle);
 				multifile->current_index++;
 				multifile->pos_in_current = 0;
-				multifile->current_handle = std::fopen(getFilePath(multifile->filenames[multifile->current_index]), "rb");
+				multifile->current_handle = std::fopen(getFilePath(multifile->filenames[multifile->current_index].c_str()), "rb");
 				if (multifile->current_handle == nullptr) {
 					multifile->error_state = MultiFileError::OPEN_FAILED;
 					break;
@@ -351,7 +358,7 @@ int driver_fseek(void* multifile, long long int offset, MultiFileWhence whence) 
 			std::fclose(mf->current_handle);
 			mf->current_handle = nullptr;
 		}
-		mf->current_handle = std::fopen(getFilePath(mf->filenames[new_index]), "rb");
+		mf->current_handle = std::fopen(getFilePath(mf->filenames[new_index].c_str()), "rb");
 		if (mf->current_handle == nullptr) {
 			mf->error_state = MultiFileError::OPEN_FAILED;
 			return -1;

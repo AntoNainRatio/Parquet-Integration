@@ -1,4 +1,5 @@
 #include "khiopsdriver_parquet.h"
+#include "file_finder.h"
 #include <iostream>
 
 void dump_multifile(MultiFile* mf) {
@@ -31,45 +32,17 @@ int read_test(void* buffer, size_t count, MultiFile* mf) {
 }
 
 int main() {
-	std::vector<const char*> files = { 
-		"parquet://C:/Users/KXFJ3896/Documents/Parquet-Integration/khiopsdriver_parquet/test/toto/toto_0.txt",
-		"parquet://C:/Users/KXFJ3896/Documents/Parquet-Integration/khiopsdriver_parquet/test/toto/toto_1.txt",
-		"parquet://C:/Users/KXFJ3896/Documents/Parquet-Integration/khiopsdriver_parquet/test/toto/toto_2.txt",
-	};
+	std::string parquet = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
 
-	MultiFile* mf = driver_fopen(files, 'r');
-	if (mf->error_state == MultiFileError::OK) {
-		std::cout << "Files opened successfully." << std::endl;
+	MultiFile* mf = driver_fopen(parquet.c_str(), 'r');
+	if (mf == nullptr) {
+		std::cout << "driver_fopen error." << std::endl;
+		return -1;
 	}
 	else {
-		std::cout << "Error opening files. Error code: " << static_cast<int>(mf->error_state) << std::endl;
+		dump_multifile(mf);
 	}
-	dump_multifile(mf);
-
-
-	void* buffer = calloc(100, sizeof(char));
 	
-	read_test(buffer, 40, mf);
 
-	dump_multifile(mf);
-
-	if (driver_fseek(mf, -1, MultiFileWhence::CURRENT) != 0) {
-		std::cout << "Error seeking." << std::endl;
-	}
-	else {
-		read_test(buffer, 50, mf);
-	}
-
-
-	free(buffer);
-
-	int code = driver_fclose(mf);
-	if (code == 0) {
-		std::cout << "Files closed successfully." << std::endl;
-	} else {
-		std::cout << "Error closing files. Error code: " << code << std::endl;
-	}
-
-	dump_multifile(mf); // mf is deleted in driver_fclose, this is just to show the function usage
 	return 0;
 }
