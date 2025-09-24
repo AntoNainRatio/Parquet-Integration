@@ -39,10 +39,45 @@ int main() {
 		std::cout << "driver_fopen error." << std::endl;
 		return -1;
 	}
-	else {
-		dump_multifile(mf);
-	}
-	
+	int code;
 
+	dump_multifile(mf);
+
+	const size_t buffer_size = 1024;
+	char* buffer = (char*)malloc(buffer_size * sizeof(char));
+	
+	size_t first_read_size = 500;
+	code = read_test(buffer, first_read_size, mf);
+	if (code == -1) {
+		std::cout << "read_test error." << std::endl;
+		free(buffer);
+		return -1;
+	}
+
+	std::cout << "After first read_test:" << std::endl;
+	dump_multifile(mf);
+
+	code = read_test(buffer+500, first_read_size, mf);
+	if (code == -1) {
+		std::cout << "read_test error." << std::endl;
+		free(buffer);
+		return -1;
+	}
+
+	std::cout << "After second read_test:" << std::endl;
+	dump_multifile(mf);
+
+	std::cout << std::endl << "Buffer content: " << buffer << std::endl;
+
+	code = driver_fseek(mf, -200, MultiFileWhence::END);
+	std::cout << std::endl << "After driver_fseek to -200 from END:" << std::endl;
+	dump_multifile(mf);
+
+	free(buffer);
+	code = driver_fclose(mf);
+	if (code == EOF) {
+		std::cout << "driver_fclose error." << std::endl;
+		return -1;
+	}
 	return 0;
 }
