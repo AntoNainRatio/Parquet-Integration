@@ -49,18 +49,15 @@ void LogError(const char* msg) {
 	g_lastError = std::move(msg);
 }
 
-const char* driver_getDriverName()
-{
+const char* driver_getDriverName() {
 	return "Parquet driver";
 }
 
-const char* driver_getVersion()
-{
+const char* driver_getVersion() {
 	return "1.0.0";
 }
 
-const char* driver_getScheme()
-{
+const char* driver_getScheme() {
 #ifdef __parquetreadonlydriver__
 	return "parquetro";
 #else
@@ -68,8 +65,7 @@ const char* driver_getScheme()
 #endif 
 }
 
-int driver_isReadOnly()
-{
+int driver_isReadOnly() {
 #ifdef __parquetreadonlydriver__
 	return 1;
 #else
@@ -77,31 +73,26 @@ int driver_isReadOnly()
 #endif 
 }
 
-int driver_connect()
-{
+int driver_connect() {
 	return 0;
 }
 
-int driver_disconnect()
-{
+int driver_disconnect() {
 	return 1;
 }
 
-int driver_isConnected()
-{
+int driver_isConnected() {
 	return 1;
 }
 
 // Nombre de caracteres du nom du scheme
-int getSchemeCharNumber()
-{
+int getSchemeCharNumber() {
 	static const int nSchemeCharNumber = (int)strlen(driver_getScheme());
 	return nSchemeCharNumber;
 }
 
 // Test si un fichier est gere par le scheme
-int isManaged(const char* sFilePathName)
-{
+int isManaged(const char* sFilePathName) {
 	int ok;
 
 	assert(sFilePathName != NULL);
@@ -115,8 +106,7 @@ int isManaged(const char* sFilePathName)
 }
 
 // Methode utilitaire pour avoir acces au nom du fichier sans son schema
-const char* getFilePath(const char* sFilePathName)
-{
+const char* getFilePath(const char* sFilePathName) {
 	int nStartFilePath;
 
 	// La gestion du nombre de '/' n'est pas claire
@@ -147,8 +137,7 @@ const char* getFilePath(const char* sFilePathName)
 		return sFilePathName;
 }
 
-int driver_fileExists(const char* filename)
-{
+int driver_fileExists(const char* filename) {
 	int bIsFile = false;
 
 #ifdef _WIN32
@@ -164,8 +153,7 @@ int driver_fileExists(const char* filename)
 	return bIsFile;
 }
 
-int driver_dirExists(const char* filename)
-{
+int driver_dirExists(const char* filename) {
 	int bIsDirectory = false;
 
 #ifdef _WIN32
@@ -193,14 +181,12 @@ int driver_dirExists(const char* filename)
 	return bIsDirectory;
 }
 
-long long int driver_getFileSize(MultiFile* multifile)
-{
+long long int driver_getFileSize(MultiFile* multifile) {
 	ERROR_ON_NULL_ARG(multifile, -1);
 	return multifile->total_size;
 }
 
-long long int driver_getSingleFileSize(std::string filename)
-{
+long long int driver_getSingleFileSize(std::string filename) {
 	long long int filesize;
 	int nError;
 
@@ -241,13 +227,6 @@ MultiFile* driver_fopen(const char* parquet, char mode) {
 		LogError("driver_fopen: no files found after conversion");
 		return nullptr;
 	}
-
-	// Mode handling (read-only, write, append)
-	/*if (mode != 'r' && mode != 'w' && mode != 'a') {
-		multifile->error_state = MultiFileError::OPEN_FAILED;
-		return multifile;
-	}
-	multifile->mode = (mode == 'r') ? MultiFileMode::READ_ONLY : MultiFileMode::READ_WRITE;*/
 
 	multifile->filenames = filenames;
 
@@ -297,9 +276,9 @@ long long int driver_fread(void* ptr, size_t size, size_t count, void* multifile
 	}
 
 	MultiFile* multifile = static_cast<MultiFile*>(multifile_ptr);
-	/*if (multifile->error_state != MultiFileError::OK) {
+	if (multifile->error_state != MultiFileError::OK) {
 		return -1;
-	}*/
+	}
 	size_t total_bytes_to_read = size * count;
 	size_t total_bytes_read = 0;
 	while (total_bytes_read < total_bytes_to_read) {
@@ -341,9 +320,9 @@ int driver_fseek(void* multifile, long long int offset, MultiFileWhence whence) 
 	ERROR_ON_NULL_ARG(multifile, -1);
 
 	MultiFile* mf = static_cast<MultiFile*>(multifile);
-	/*if (mf->error_state != MultiFileError::OK) {
+	if (mf->error_state != MultiFileError::OK) {
 		return -1;
-	}*/
+	}
 	long long int new_logical_pos;
 	switch (whence) {
 		case MultiFileWhence::BEGIN:
@@ -369,7 +348,7 @@ int driver_fseek(void* multifile, long long int offset, MultiFileWhence whence) 
 	size_t new_index = 0;
 
 	// binary search could be used here for efficiency
-	while (new_index < mf->filenames.size() && mf->prefix_offsets[new_index] + mf->file_sizes[new_index] <= new_logical_pos) {
+	while (new_index < mf->filenames.size() && mf->prefix_offsets[new_index] + mf->file_sizes[new_index] < new_logical_pos) {
 		new_index++;
 	}
 	if (new_index >= mf->filenames.size()) {

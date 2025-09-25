@@ -194,6 +194,7 @@ int test_driver_fread() {
 	return failed;
 }
 
+// read all file from begin to end using driver_fread
 int test_driver_fread_all_file() {
 	std::string parquet = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
 
@@ -236,7 +237,8 @@ int test_driver_fread_all_file() {
 	return 0;
 }
 
-int test_friver_fseek_errors() {
+// testing error handling in driver_fseek function
+int test_driver_fseek_errors() {
 	int failed = 0;
 
 	int code;
@@ -254,14 +256,14 @@ int test_friver_fseek_errors() {
 	}
 
 	size_t file_size = driver_getFileSize(mf);
-	code = driver_fseek(mf, file_size, MultiFileWhence::BEGIN);
+	code = driver_fseek(mf, file_size + 1, MultiFileWhence::BEGIN);
 	if (code != -1) {
-		std::cout << "driver_fseek errors: file_size offset from BEGIN doesn't return -1." << std::endl;
+		std::cout << "driver_fseek errors: file_size+1 offset from BEGIN doesn't return -1." << std::endl;
 		failed++;
 	}
-	code = driver_fseek(mf, file_size, MultiFileWhence::CURRENT);
+	code = driver_fseek(mf, file_size + 1, MultiFileWhence::CURRENT);
 	if (code != -1) {
-		std::cout << "driver_fseek errors: file_size offset from CURRENT(BEGIN) doesn't return -1." << std::endl;
+		std::cout << "driver_fseek errors: file_size+1 offset from CURRENT(BEGIN) doesn't return -1." << std::endl;
 		failed++;
 	}
 
@@ -298,6 +300,7 @@ int test_friver_fseek_errors() {
 	return failed;
 }
 
+// calls to driver_fseek with offset between 0 and file_size 'times' times
 int test_driver_fseek_random(int times = 20) {
 	int failed = 0;
 
@@ -330,6 +333,7 @@ int test_driver_fseek_random(int times = 20) {
 	return failed;
 }
 
+// crossing the file from begin to end using driver_fseek
 int test_driver_fseek_all_file() {
 	std::string parquet = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
 
@@ -365,6 +369,59 @@ int test_driver_fseek_all_file() {
 		std::cout << driver_getlasterror() << std::endl;
 		return 1;
 	}
+
+	code = driver_fclose(mf);
+	if (code == -1) {
+		throw std::runtime_error("driver_close error during driver_fseek all file test.");
+	}
+	return 0;
+}
+
+// crossing the file from end to begin using driver_fseek
+int test_driver_fseek_all_file_reverse() {
+	std::string parquet = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
+
+	MultiFile* mf = driver_fopen(parquet.c_str(), 'r');
+	if (mf == nullptr) {
+		throw std::runtime_error("driver_fopen error during driver_fseek all file test.");
+	}
+	int code;
+
+	size_t total_seek = 0;
+	code = driver_fseek(mf, 0, MultiFileWhence::END);
+	if (code == -1) {
+		std::cout << "driver_fseek all file reverse test: error seeking the whole file." << std::endl;
+		std::cout << driver_getlasterror() << std::endl;
+		return 1;
+	}
+	//dump_multifile(mf);
+
+	size_t total_seek_target = driver_getFileSize(mf);
+	size_t offset = 5678;
+	while (total_seek + offset < total_seek_target) {
+
+		code = driver_fseek(mf, -offset, MultiFileWhence::CURRENT);
+		if (code != -1) {
+			total_seek += offset;
+		}
+		else {
+			std::cout << "driver_fseek all file reverse test: error seeking the whole file." << std::endl;
+			std::cout << driver_getlasterror() << std::endl;
+			return 1;
+		}
+	}
+
+	size_t final_offset = total_seek_target - total_seek;
+	code = driver_fseek(mf, -final_offset, MultiFileWhence::CURRENT);
+	if (code != -1) {
+		total_seek += offset;
+	}
+	else {
+		std::cout << "driver_fseek all file reverse test: error seeking the whole file (last call)." << std::endl;
+		std::cout << driver_getlasterror() << std::endl;
+		return 1;
+	}
+	// dump_multifile(mf);
 
 	code = driver_fclose(mf);
 	if (code == -1) {
@@ -411,7 +468,8 @@ int main() {
 
 	failed += test_driver_fseek_random();
 	failed += test_driver_fseek_all_file();
-	failed += test_friver_fseek_errors();
+	failed += test_driver_fseek_all_file_reverse();
+	failed += test_driver_fseek_errors();
 
 	error_resume(failed);
 
