@@ -78,9 +78,6 @@ extern "C"
 	// If the file is successfully opened, the function returns a pointer to an object that can be used to identify
 	// the stream on future operations. Otherwise, a null pointer is returned and the method driver_getlasterror()
 	// returns the error message.
-
-	// TODO: 
-	//VISIBLE MultiFile* driver_fopen_glob(const char* globbing, char mode);
 	VISIBLE MultiFile* driver_fopen(const char* parquet, char mode);
 
 	// Returns 0 on success, EOF on error

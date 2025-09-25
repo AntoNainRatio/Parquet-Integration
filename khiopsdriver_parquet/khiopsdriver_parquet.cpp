@@ -32,9 +32,22 @@
 #endif // __clang__
 #endif // __linux_or_apple__
 
+#define ERROR_ON_NULL_ARG(arg, err_val)                                                                        \
+	if (!(arg))                                                                                                \
+	{                                                                                                          \
+		LogError("Null arg error");                                                                            \
+		return (err_val);                                                                                      \
+	}
+
 // Define to compile a read-only version of the driver
 // Uncomment the following line to compile the read-only version of the driver
 // #define __parquetreadonlydriver__
+
+static thread_local const char* g_lastError;
+
+void LogError(const char* msg) {
+	g_lastError = std::move(msg);
+}
 
 const char* driver_getDriverName()
 {
@@ -182,8 +195,7 @@ int driver_dirExists(const char* filename)
 
 long long int driver_getFileSize(MultiFile* multifile)
 {
-	if (multifile == nullptr)
-		return -1;
+	ERROR_ON_NULL_ARG(multifile, -1);
 	return multifile->total_size;
 }
 
@@ -219,12 +231,15 @@ long long int driver_getSingleFileSize(std::string filename)
 //}
 
 MultiFile* driver_fopen(const char* parquet, char mode) {
+	ERROR_ON_NULL_ARG(parquet, nullptr);
+
 	std::vector<std::string> filenames = parquetToCsv(parquet);
 	MultiFile* multifile = new MultiFile();
 
 	if (filenames.size() == 0) {
-		multifile->error_state = MultiFileError::NO_FILES;
-		return multifile;
+		delete multifile;
+		LogError("driver_fopen: no files found after conversion");
+		return nullptr;
 	}
 
 	// Mode handling (read-only, write, append)
@@ -239,18 +254,20 @@ MultiFile* driver_fopen(const char* parquet, char mode) {
 	for (std::string filename : filenames) {
 		long long int filesize = driver_getSingleFileSize(filename);
 		if (filesize < 0) {
-			multifile->error_state = MultiFileError::OPEN_FAILED;
-			return multifile;
+			delete multifile;
+			LogError("driver_fopen: couldn't found a file size");
+			return nullptr;
 		}
 		multifile->file_sizes.push_back(filesize);
 		multifile->prefix_offsets.push_back(multifile->total_size);
 		multifile->total_size += filesize;
 	}
 
-	FILE* handle = std::fopen(getFilePath(filenames[0].c_str()), "rb");
+	FILE* handle = std::fopen(getFilePath(filenames[0].c_str()), "r");
 	if (handle == nullptr) {
-		multifile->error_state = MultiFileError::OPEN_FAILED;
-		return multifile;
+		delete multifile;
+		LogError("driver_fopen: couldn't open first file");
+		return nullptr;
 	}
 	multifile->current_handle = handle;
 
@@ -258,9 +275,8 @@ MultiFile* driver_fopen(const char* parquet, char mode) {
 }
 
 int driver_fclose(void* multifile_ptr) {
-	if (multifile_ptr == nullptr) {
-		return EOF;
-	}
+	ERROR_ON_NULL_ARG(multifile_ptr, EOF);
+
 	MultiFile* multifile = static_cast<MultiFile*>(multifile_ptr);
 	int code = EOF;
 	if (multifile->current_handle != nullptr) {
@@ -272,18 +288,24 @@ int driver_fclose(void* multifile_ptr) {
 }
 
 long long int driver_fread(void* ptr, size_t size, size_t count, void* multifile_ptr) {
-	if (multifile_ptr == nullptr || ptr == nullptr || size == 0 || count == 0) {
+	ERROR_ON_NULL_ARG(ptr, -1);
+	ERROR_ON_NULL_ARG(multifile_ptr, -1);
+
+	if (size == 0 || count == 0) {
+		LogError("Size or count equal to 0");
 		return -1;
 	}
+
 	MultiFile* multifile = static_cast<MultiFile*>(multifile_ptr);
-	if (multifile->error_state != MultiFileError::OK) {
+	/*if (multifile->error_state != MultiFileError::OK) {
 		return -1;
-	}
+	}*/
 	size_t total_bytes_to_read = size * count;
 	size_t total_bytes_read = 0;
 	while (total_bytes_read < total_bytes_to_read) {
 		if (multifile->current_handle == nullptr) {
 			multifile->error_state = MultiFileError::IO_ERROR;
+			LogError("no file openned ready to read");
 			break;
 		}
 		size_t bytes_left_in_current = multifile->file_sizes[multifile->current_index] - multifile->pos_in_current;
@@ -298,9 +320,11 @@ long long int driver_fread(void* ptr, size_t size, size_t count, void* multifile
 				std::fclose(multifile->current_handle);
 				multifile->current_index++;
 				multifile->pos_in_current = 0;
-				multifile->current_handle = std::fopen(getFilePath(multifile->filenames[multifile->current_index].c_str()), "rb");
+				multifile->current_handle = std::fopen(getFilePath(multifile->filenames[multifile->current_index].c_str()), "r");
+	
 				if (multifile->current_handle == nullptr) {
 					multifile->error_state = MultiFileError::OPEN_FAILED;
+					LogError("Couldn't open next file");
 					break;
 				}
 			}
@@ -314,13 +338,12 @@ long long int driver_fread(void* ptr, size_t size, size_t count, void* multifile
 }
 
 int driver_fseek(void* multifile, long long int offset, MultiFileWhence whence) {
-	if (multifile == nullptr) {
-		return -1;
-	}
+	ERROR_ON_NULL_ARG(multifile, -1);
+
 	MultiFile* mf = static_cast<MultiFile*>(multifile);
-	if (mf->error_state != MultiFileError::OK) {
+	/*if (mf->error_state != MultiFileError::OK) {
 		return -1;
-	}
+	}*/
 	long long int new_logical_pos;
 	switch (whence) {
 		case MultiFileWhence::BEGIN:
@@ -334,10 +357,12 @@ int driver_fseek(void* multifile, long long int offset, MultiFileWhence whence) 
 			break;
 		default:
 			mf->error_state = MultiFileError::SEEK_ERROR;
+			LogError("Invalid whence");
 			return -1;
 	}
 	if (new_logical_pos < 0 || new_logical_pos > mf->total_size) {
 		mf->error_state = MultiFileError::SEEK_ERROR;
+		LogError("new postion out of bound");
 		return -1;
 	}
 	// Find the file corresponding to the new logical position
@@ -349,6 +374,7 @@ int driver_fseek(void* multifile, long long int offset, MultiFileWhence whence) 
 	}
 	if (new_index >= mf->filenames.size()) {
 		mf->error_state = MultiFileError::SEEK_ERROR;
+		LogError("Couldn't find the right file according to offset");
 		return -1;
 	}
 
@@ -358,9 +384,10 @@ int driver_fseek(void* multifile, long long int offset, MultiFileWhence whence) 
 			std::fclose(mf->current_handle);
 			mf->current_handle = nullptr;
 		}
-		mf->current_handle = std::fopen(getFilePath(mf->filenames[new_index].c_str()), "rb");
+		mf->current_handle = std::fopen(getFilePath(mf->filenames[new_index].c_str()), "r");
 		if (mf->current_handle == nullptr) {
 			mf->error_state = MultiFileError::OPEN_FAILED;
+			LogError("Couldn't open the right file accroding to offset");
 			return -1;
 		}
 		mf->current_index = new_index;
@@ -376,5 +403,5 @@ int driver_fseek(void* multifile, long long int offset, MultiFileWhence whence) 
 }
 
 const char* driver_getlasterror() {
-	return strerror(errno);
+	return g_lastError;
 }

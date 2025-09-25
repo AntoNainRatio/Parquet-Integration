@@ -44,7 +44,7 @@ int main() {
 	dump_multifile(mf);
 
 	const size_t buffer_size = 1024;
-	char* buffer = (char*)malloc(buffer_size * sizeof(char));
+	char* buffer = (char*)calloc(buffer_size, sizeof(char));
 	
 	size_t first_read_size = 500;
 	code = read_test(buffer, first_read_size, mf);
