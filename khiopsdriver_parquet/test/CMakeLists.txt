@@ -9,16 +9,21 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-project ("khiopsdriver_parquet")
-
 # Ajoutez une source à l'exécutable de ce projet.
 add_executable (main_test "test.cpp")
 
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET khiopsdriver_parquet PROPERTY CXX_STANDARD 20)
+  set_property(TARGET main_test PROPERTY CXX_STANDARD 20)
 endif()
 
 
 target_link_libraries("main_test"
 						PRIVATE 
 						khiopsdriver_parquet)
+
+add_custom_command(TARGET main_test POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:khiopsdriver_parquet>
+        $<TARGET_FILE_DIR:main_test>
+)

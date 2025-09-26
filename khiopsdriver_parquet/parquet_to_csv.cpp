@@ -115,6 +115,7 @@ int extract_chunk_index(const std::string& filename) {
 // row_groups per thread is set by total_row_groups / num_threads
 // this way work is divided by number of threads available
 std::vector<std::string> parquetToCsv(const char* parquet_file) {
+
     auto total_start = high_resolution_clock::now();
 
     std::vector<std::string> chunk_files;
@@ -177,4 +178,10 @@ std::vector<std::string> parquetToCsv(const char* parquet_file) {
     std::sort(chunk_files.begin(), chunk_files.end(),
         [](const std::string& a, const std::string& b) { return extract_chunk_index(a) < extract_chunk_index(b); });
     return chunk_files;
+}
+
+void delete_chunk_files(const std::vector<std::string>& chunk_files) {
+    for (const auto& file : chunk_files) {
+        fs::remove(file);
+    }
 }

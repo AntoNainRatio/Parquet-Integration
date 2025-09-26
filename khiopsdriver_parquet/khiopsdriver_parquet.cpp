@@ -39,6 +39,8 @@
 		return (err_val);                                                                                      \
 	}
 
+using namespace std;
+
 // Define to compile a read-only version of the driver
 // Uncomment the following line to compile the read-only version of the driver
 // #define __parquetreadonlydriver__
@@ -219,7 +221,9 @@ long long int driver_getSingleFileSize(std::string filename) {
 MultiFile* driver_fopen(const char* parquet, char mode) {
 	ERROR_ON_NULL_ARG(parquet, nullptr);
 
-	std::vector<std::string> filenames = parquetToCsv(parquet);
+	const char* parquet_path = getFilePath(parquet); // just to check the schema is correct
+	
+	std::vector<std::string> filenames = parquetToCsv(parquet_path);
 	MultiFile* multifile = new MultiFile();
 
 	if (filenames.size() == 0) {
@@ -262,6 +266,11 @@ int driver_fclose(void* multifile_ptr) {
 		code = std::fclose(multifile->current_handle);
 		multifile->current_handle = nullptr;
 	}
+
+	// deleting temporary csv files
+	if (multifile->filenames.size() > 0) 
+		delete_chunk_files(multifile->filenames);
+
 	delete multifile;
 	return code;
 }

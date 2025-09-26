@@ -11,14 +11,17 @@ endif()
 
 project ("khiopsdriver_parquet")
 
-# recherche packages
 find_package(Arrow REQUIRED)
 find_package(Parquet REQUIRED)
 
-# Ajoutez une source à l'exécutable de ce projet.
-add_library (khiopsdriver_parquet "khiopsdriver_parquet.cpp" "khiopsdriver_parquet.h" "multifile.h" "globbing.h" "file_finder.cpp" "file_finder.h" "parquet_to_csv.cpp" "parquet_to_csv.h")
-add_executable (main "main.cpp")
-add_subdirectory(test)
+add_library (khiopsdriver_parquet SHARED 
+			"khiopsdriver_parquet.cpp"
+			"khiopsdriver_parquet.h"
+			"multifile.h"
+			"parquet_to_csv.cpp"
+			"parquet_to_csv.h"
+)
+
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET khiopsdriver_parquet PROPERTY CXX_STANDARD 20)
@@ -30,8 +33,7 @@ target_link_libraries("khiopsdriver_parquet"
 						Arrow::arrow_shared
 						Parquet::parquet_shared)
 
-target_link_libraries("main"
-						PRIVATE 
-						khiopsdriver_parquet)
 
-# TODO: Ajoutez des tests et installez des cibles si nécessaire.
+target_include_directories(khiopsdriver_parquet PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_subdirectory(test)
