@@ -43,7 +43,7 @@ using namespace std;
 
 // Define to compile a read-only version of the driver
 // Uncomment the following line to compile the read-only version of the driver
-// #define __parquetreadonlydriver__
+#define __parquetreadonlydriver__
 
 static thread_local const char* g_lastError;
 
@@ -393,3 +393,157 @@ int driver_fseek(void* multifile, long long int offset, MultiFileWhence whence) 
 const char* driver_getlasterror() {
 	return g_lastError;
 }
+
+// Compilation conditionnelle des methodes de type read-write
+#ifndef __nullreadonlydriver__
+
+long long int driver_fwrite(const void* ptr, size_t size, size_t count, void* stream)
+{
+	long long int writecount;
+
+	assert(stream != NULL);
+
+	// Ecriture dans le fichier
+	writecount = fwrite(ptr, size, count, (FILE*)stream);
+	if (writecount != (long long int)count && ferror((FILE*)stream))
+		writecount = 0;
+	return writecount;
+}
+
+int driver_fflush(void* stream)
+{
+	int nRet;
+	assert(stream != NULL);
+	nRet = fflush((FILE*)stream);
+	return nRet == 0;
+}
+
+int driver_remove(const char* filename)
+{
+	int ok;
+	ok = remove(getFilePath(filename)) == 0;
+	return ok;
+}
+
+int driver_mkdir(const char* pathname)
+{
+	// Pour UNIX ou wgpp
+#if defined __linux_or_apple__
+	int error;
+	error = mkdir(getFilePath(pathname), S_IRWXU);
+	return error == 0;
+	// Pour Visual C++
+#else
+	int error;
+	error = _mkdir(getFilePath(pathname));
+	return error == 0;
+#endif
+}
+
+int driver_rmdir(const char* pathname)
+{
+	// Pour UNIX ou wgpp
+#if defined __linux_or_apple__
+	int error;
+	error = rmdir(getFilePath(pathname));
+	return error == 0;
+	// Pour Visual C++
+#else
+	int error;
+	error = _rmdir(getFilePath(pathname));
+	return error == 0;
+#endif
+}
+
+long long int driver_diskFreeSpace(const char* filename)
+{
+	const char* sPathName;
+
+	// Si rien n'est specifie, on prend le repertoire courant
+	if (strcmp(filename, "") == 0)
+		sPathName = ".";
+	// Sinon, on prend le repertoire passe en parametre
+	else
+		sPathName = getFilePath(filename);
+
+	// Implementation windows
+#if defined _MSC_VER || defined __MSVCRT_VERSION__
+	{
+		long long int lFreeDiskSpace = 0;
+		int nLength;
+		WCHAR* pszPathName;
+		int nError;
+		unsigned __int64 lFreeBytesAvailable;
+		unsigned __int64 lTotalNumberOfBytes;
+		unsigned __int64 lTotalNumberOfFreeBytes;
+
+		// Passage en WCHAR
+		nLength = (int)strlen(sPathName);
+		pszPathName = new WCHAR[nLength + 1];
+		mbstowcs(pszPathName, sPathName, nLength + 1);
+
+		// Appel de la routine Windows
+		/*nError = GetDiskFreeSpaceEx(pszPathName, (PULARGE_INTEGER)&lFreeBytesAvailable,
+			(PULARGE_INTEGER)&lTotalNumberOfBytes,
+			(PULARGE_INTEGER)&lTotalNumberOfFreeBytes);
+		if (nError != 0)
+			lFreeDiskSpace = lFreeBytesAvailable;*/
+
+		// Nettoyage
+		delete[] pszPathName;
+
+		// Nettoyage de la chaine allouee
+		assert(lFreeDiskSpace >= 0);
+		return lFreeDiskSpace;
+	};
+#endif // _MSC_VER
+
+	// Implementation Linux
+#if defined __linux_or_apple__
+#if defined(__gnu_linux__)
+	{
+		struct statfs fiData;
+		long long int lFree;
+
+		assert(sPathName != NULL);
+		if ((statfs(sPathName, &fiData)) < 0)
+		{
+			lFree = 0;
+		}
+		else
+		{
+			lFree = fiData.f_bavail;
+			lFree *= fiData.f_bsize;
+		}
+		assert(lFree >= 0);
+		return lFree;
+	}
+
+#else  // __gnu_linux__
+
+	{
+		// cf. statvfs for linux.
+		// http://stackoverflow.com/questions/1449055/disk-space-used-free-total-how-do-i-get-this-in-c
+		// http://pubs.opengroup.org/onlinepubs/009695399/basedefs/sys/statvfs.h.html
+		struct statvfs fiData;
+		long long int lFree;
+
+		assert(sPathName != NULL);
+
+		if ((statvfs(sPathName, &fiData)) < 0)
+		{
+			lFree = 0;
+		}
+		else
+		{
+			lFree = fiData.f_bavail;
+			lFree *= fiData.f_bsize;
+		}
+		assert(lFree >= 0);
+		return lFree;
+	}
+#endif // __gnu_linux__
+#endif // __linux_or_apple__
+}
+
+#endif // __nullreadonlydriver__
