@@ -20,10 +20,10 @@ endif()
 
 target_link_libraries("main_test"
 						PRIVATE 
-						khiopsdriver_parquet)
+						khiopsdriver_file_parquet)
 
 add_custom_command(TARGET main_test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:khiopsdriver_parquet>
+        $<TARGET_FILE:khiopsdriver_file_parquet>
         $<TARGET_FILE_DIR:main_test>
 )

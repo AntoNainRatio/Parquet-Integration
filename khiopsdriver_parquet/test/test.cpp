@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "../khiopsdriver_parquet.h"
+#include "../khiopsdriver_file_parquet.h"
 
 void dump_multifile(MultiFile* mf) {
 	if (mf == nullptr) {

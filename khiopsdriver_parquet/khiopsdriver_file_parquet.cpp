@@ -3,7 +3,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "khiopsdriver_parquet.h"
+#include "khiopsdriver_file_parquet.h"
 #include "file_finder.h"
 #include "parquet_to_csv.h"
 
@@ -56,15 +56,11 @@ const char* driver_getDriverName() {
 }
 
 const char* driver_getVersion() {
-	return "1.0.0";
+	return "0.0.0";
 }
 
 const char* driver_getScheme() {
-#ifdef __parquetreadonlydriver__
-	return "parquetro";
-#else
 	return "parquet";
-#endif 
 }
 
 int driver_isReadOnly() {

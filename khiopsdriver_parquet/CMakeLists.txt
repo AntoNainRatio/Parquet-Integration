@@ -1,39 +1,41 @@
-﻿# CMakeList.txt : projet CMake pour khiopsdriver_parquet, incluez la source et définissez
-# la logique spécifique au projet ici.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required(VERSION 3.14)
 
-# Activez Rechargement à chaud pour les compilateurs MSVC si cela est pris en charge.
-if (POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
-endif()
+project("khiopsdriver_file_parquet" VERSION 1.0.0 LANGUAGES CXX)
 
-project ("khiopsdriver_parquet")
+find_package(Arrow CONFIG REQUIRED)
+find_package(Parquet CONFIG REQUIRED)
 
-find_package(Arrow REQUIRED)
-find_package(Parquet REQUIRED)
-
-add_library (khiopsdriver_parquet SHARED 
-			"khiopsdriver_parquet.cpp"
-			"khiopsdriver_parquet.h"
-			"multifile.h"
-			"parquet_to_csv.cpp"
-			"parquet_to_csv.h"
+add_library(khiopsdriver_file_parquet SHARED
+    khiopsdriver_file_parquet.cpp
+    khiopsdriver_file_parquet.h
+    multifile.h
+    parquet_to_csv.cpp
+    parquet_to_csv.h
 )
 
+target_link_libraries(khiopsdriver_file_parquet
+    PRIVATE
+      Arrow::arrow_shared
+      Parquet::parquet_shared
+)
 
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET khiopsdriver_parquet PROPERTY CXX_STANDARD 20)
+set_target_properties(khiopsdriver_file_parquet PROPERTIES
+    CXX_STANDARD 20
+    PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/khiopsdriver_file_parquet.h
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+    VERSION ${PROJECT_VERSION}
+)
+
+if(WIN32)
+  set_target_properties(khiopsdriver_file_parquet PROPERTIES
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
+    RUNTIME_OUTPUT_NAME "libkhiopsdriver_file_parquet"
+    ARCHIVE_OUTPUT_NAME "libkhiopsdriver_file_parquet"
+  )
 endif()
 
-# Linkage des librairies
-target_link_libraries("khiopsdriver_parquet"
-						PRIVATE 
-						Arrow::arrow_shared
-						Parquet::parquet_shared)
 
 
-target_include_directories(khiopsdriver_parquet PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(khiopsdriver_file_parquet PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(test)
