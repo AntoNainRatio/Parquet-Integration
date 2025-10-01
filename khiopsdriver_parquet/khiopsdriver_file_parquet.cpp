@@ -16,6 +16,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <iostream>
 
 #ifdef _MSC_VER
 #include <direct.h>
@@ -219,8 +220,18 @@ MultiFile* driver_fopen(const char* parquet, char mode) {
 
 	const char* parquet_path = getFilePath(parquet); // just to check the schema is correct
 	
-	std::vector<std::string> filenames = parquetToCsv(parquet_path);
+	char* valid_path = (char*)malloc((strlen(parquet_path) + 2) * sizeof(char));
+	valid_path[0] = parquet_path[0];
+	valid_path[1] = ':';
+	for (size_t i = 1; i <= strlen(parquet_path); i++)
+		valid_path[i + 1] = parquet_path[i];
+
+	valid_path[strlen(parquet_path) + 1] = '\0';
+
+	std::vector<std::string> filenames = parquetToCsv(valid_path);
 	MultiFile* multifile = new MultiFile();
+
+	free(valid_path);
 
 	if (filenames.size() == 0) {
 		delete multifile;

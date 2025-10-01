@@ -22,7 +22,7 @@ void dump_multifile(MultiFile* mf) {
 }
 
 int test_driver_fopen_errors() {
-	std::vector<const char*> args = { nullptr, "non_existent", "parquet://C:/Users/KXFJ3896/Documents/Parquet-Integration/khiopsdriver_parquet/test/data/not_parquet.txt", "parquet://:/Users/KXFJ3896/Documents/Parquet-Integration/khiopsdriver_parquet/test/data/not_parquet.txt" };
+	std::vector<const char*> args = { nullptr, "non_existent", "parquet://C/Users/KXFJ3896/Documents/Parquet-Integration/khiopsdriver_parquet/test/data/not_parquet.txt", "parquet://:/Users/KXFJ3896/Documents/Parquet-Integration/khiopsdriver_parquet/test/data/not_parquet.txt" };
 
 	int failed = 0;
 
@@ -56,7 +56,7 @@ int test_driver_fread_errors() {
 
 	int code;
 
-	std::string parquet = "parquet://C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
+	std::string parquet = "parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
 
 	// opening file
 	MultiFile* mf = driver_fopen(parquet.c_str(), 'r');
@@ -136,7 +136,7 @@ int verify_driver_fread(MultiFile* mf, int return_code, size_t total_read) {
 int test_driver_fread() {
 	int failed = 0;
 
-	std::string parquet = "parquet://C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
+	std::string parquet = "parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
 
 	MultiFile* mf = driver_fopen(parquet.c_str(), 'r');
 	if (mf == nullptr) {
@@ -196,7 +196,7 @@ int test_driver_fread() {
 
 // read all file from begin to end using driver_fread
 int test_driver_fread_all_file() {
-	std::string parquet = "parquet://C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
+	std::string parquet = "parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
 
 	MultiFile* mf = driver_fopen(parquet.c_str(), 'r');
 	if (mf == nullptr) {
@@ -248,7 +248,7 @@ int test_driver_fseek_errors() {
 		failed++;
 	}
 
-	std::string parquet = "parquet://C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
+	std::string parquet = "parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
 
 	MultiFile* mf = driver_fopen(parquet.c_str(), 'r');
 	if (mf == nullptr) {
@@ -309,7 +309,7 @@ int test_driver_fseek_errors() {
 int test_driver_fseek_random(int times = 20) {
 	int failed = 0;
 
-	std::string parquet = "parquet://C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
+	std::string parquet = "parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
 
 	MultiFile* mf = driver_fopen(parquet.c_str(), 'r');
 	if (mf == nullptr) {
@@ -340,7 +340,7 @@ int test_driver_fseek_random(int times = 20) {
 
 // crossing the file from begin to end using driver_fseek
 int test_driver_fseek_all_file() {
-	std::string parquet = "parquet://C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
+	std::string parquet = "parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
 
 	MultiFile* mf = driver_fopen(parquet.c_str(), 'r');
 	if (mf == nullptr) {
@@ -384,7 +384,7 @@ int test_driver_fseek_all_file() {
 
 // crossing the file from end to begin using driver_fseek
 int test_driver_fseek_all_file_reverse() {
-	std::string parquet = "parquet://C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
+	std::string parquet = "parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
 
 	MultiFile* mf = driver_fopen(parquet.c_str(), 'r');
 	if (mf == nullptr) {
