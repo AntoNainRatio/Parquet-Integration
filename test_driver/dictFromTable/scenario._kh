@@ -30,7 +30,7 @@ Exit                           // Close
 
 
 // -> Save as
-ClassFileName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\AccidentsMedium.kdic      // Dictionary file
+ClassFileName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\dictFromTable\AccidentsMedium.kdic      // Dictionary file
 OK                             // Save
 // <- Save as
 

@@ -44,7 +44,7 @@ using namespace std;
 
 // Define to compile a read-only version of the driver
 // Uncomment the following line to compile the read-only version of the driver
-#define __parquetreadonlydriver__
+// #define __parquetreadonlydriver__
 
 static thread_local const char* g_lastError;
 
@@ -210,11 +210,6 @@ long long int driver_getSingleFileSize(std::string filename) {
 	return filesize;
 }
 
-//MultiFile* driver_fopen_glob(const char* globbing, char mode) {
-//	std::vector<const char*> filenames = get_matching_files(globbing);
-//	return driver_fopen(filenames, mode);
-//}
-
 MultiFile* driver_fopen(const char* parquet, char mode) {
 	ERROR_ON_NULL_ARG(parquet, nullptr);
 
@@ -229,6 +224,7 @@ MultiFile* driver_fopen(const char* parquet, char mode) {
 	valid_path[strlen(parquet_path) + 1] = '\0';
 
 	std::vector<std::string> filenames = parquetToCsv(valid_path);
+
 	MultiFile* multifile = new MultiFile();
 
 	free(valid_path);

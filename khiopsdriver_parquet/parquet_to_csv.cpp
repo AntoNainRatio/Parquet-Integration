@@ -2,6 +2,10 @@
 #include <arrow/io/api.h>
 #include <arrow/csv/api.h>
 #include <parquet/arrow/reader.h>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -64,8 +68,16 @@ void log(const std::string& msg) {
     std::cout << msg << std::endl;
 }
 
+void dump_filnames(const std::vector<std::string>& filenames) {
+    std::cout << "Filenames:" << std::endl;
+    for (const auto& file : filenames) {
+        std::cout << '\t' << file << std::endl;
+    }
+    std::cout << "EOFilenames" << std::endl;
+}
+
 // worker processing jobs from the queue
-void worker(std::shared_ptr<arrow::io::ReadableFile> infile, JobQueue& queue, std::vector<std::string>& chunk_files, std::mutex& chunk_mutex) {
+void worker(std::shared_ptr<arrow::io::ReadableFile> infile, JobQueue& queue, std::vector<std::string>& chunk_files, std::mutex& chunk_mutex, boost::uuids::uuid uuid) {
     while (true) {
         RowGroupJob job;
         if (!queue.pop(job)) break;
@@ -75,7 +87,7 @@ void worker(std::shared_ptr<arrow::io::ReadableFile> infile, JobQueue& queue, st
             PARQUET_ASSIGN_OR_THROW(reader, parquet::arrow::OpenFile(infile, arrow::default_memory_pool()));
 
             std::ostringstream filename;
-            filename << "chunk_" << job.start << "-" << (job.end - 1) << ".csv";
+            filename << uuid << "_" << job.start << ".csv";
             std::shared_ptr<arrow::io::FileOutputStream> outfile;
             PARQUET_ASSIGN_OR_THROW(outfile, arrow::io::FileOutputStream::Open(filename.str()));
 
@@ -104,7 +116,7 @@ void worker(std::shared_ptr<arrow::io::ReadableFile> infile, JobQueue& queue, st
 
 // get chunk index based on the name of the csv
 int extract_chunk_index(const std::string& filename) {
-    std::regex re("chunk_(\\d+)");
+    std::regex re("_(\\d+)\\.csv$");
     std::smatch match;
     if (std::regex_search(filename, match, re)) return std::stoi(match[1]);
     return -1;
@@ -141,6 +153,8 @@ std::vector<std::string> parquetToCsv(const char* parquet_file) {
         JobQueue queue;
         int job_id = 0;
 
+        auto uuid = boost::uuids::random_generator()();
+
 		int start = 0;
         for (int i = 0; i < num_threads; i++) {
             int count = row_groups_per_thread + (i < extra ? 1 : 0); // add one more if in the extra count
@@ -157,7 +171,7 @@ std::vector<std::string> parquetToCsv(const char* parquet_file) {
 
 		// starting worker threads
         for (int i = 0; i < num_threads; i++) {
-            threads.emplace_back(worker, infile, std::ref(queue), std::ref(chunk_files), std::ref(chunk_mutex));
+            threads.emplace_back(worker, infile, std::ref(queue), std::ref(chunk_files), std::ref(chunk_mutex), std::ref(uuid));
         }
 
         queue.set_finished();
@@ -177,6 +191,7 @@ std::vector<std::string> parquetToCsv(const char* parquet_file) {
     // sorting chunk filename list
     std::sort(chunk_files.begin(), chunk_files.end(),
         [](const std::string& a, const std::string& b) { return extract_chunk_index(a) < extract_chunk_index(b); });
+
     return chunk_files;
 }
 
@@ -185,3 +200,5 @@ void delete_chunk_files(const std::vector<std::string>& chunk_files) {
         fs::remove(file);
     }
 }
+
+

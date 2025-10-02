@@ -98,39 +98,39 @@ extern "C"
 	/////////////////////////////////////////////////////////////////////////////////////
 	////						NOT READ-ONLY FUNCTIONS								/////
 	/////////////////////////////////////////////////////////////////////////////////////
-	//// The following write functions are mandatory only if the driver is not read-only.
-	//// They are ignored otherwise, even if they are implemented
+	// The following write functions are mandatory only if the driver is not read-only.
+	// They are ignored otherwise, even if they are implemented
 
-	//// The number of elements written is returns in case of success, otherwise the function returns -1
-	//// Note that the return type is long long int rather than size_t in order to manage the -1 value
-	//VISIBLE long long int driver_fwrite(const void* ptr, size_t size, size_t count, void* multifile);
+	// The number of elements written is returns in case of success, otherwise the function returns -1
+	// Note that the return type is long long int rather than size_t in order to manage the -1 value
+	VISIBLE long long int driver_fwrite(const void* ptr, size_t size, size_t count, void* multifile);
 
-	//// Returns 0 on success, -1 on error.
-	//VISIBLE int driver_fflush(void* multifile);
+	// Returns 0 on success, -1 on error.
+	VISIBLE int driver_fflush(void* multifile);
 
-	//// Returns 1 in case of success, 0 otherwise
-	//VISIBLE int driver_remove(const char* filename);
+	// Returns 1 in case of success, 0 otherwise
+	VISIBLE int driver_remove(const char* filename);
 
-	//// Returns 1 in case of success, 0 otherwise
-	//VISIBLE int driver_mkdir(const char* pathname);
+	// Returns 1 in case of success, 0 otherwise
+	VISIBLE int driver_mkdir(const char* pathname);
 
-	//// Returns 1 in case of success, 0 otherwise
-	//VISIBLE int driver_rmdir(const char* pathname);
+	// Returns 1 in case of success, 0 otherwise
+	VISIBLE int driver_rmdir(const char* pathname);
 
-	//// Returns the available space, -1 on error
-	//VISIBLE long long int driver_diskFreeSpace(const char* filename);
+	// Returns the available space, -1 on error
+	VISIBLE long long int driver_diskFreeSpace(const char* filename);
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	//// The following functions are optional and may not be implemented
+	///////////////////////////////////////////////////////////////////////////////////
+	// The following functions are optional and may not be implemented
 
-	//// Copy sourcefilename which is on the current file system (s3, hdfs..) to the local file system
-	//// Returns 1 on success, 0 on error
-	//VISIBLE int driver_copyToLocal(const char* sourcefilename, const char* destfilename);
+	// Copy sourcefilename which is on the current file system (s3, hdfs..) to the local file system
+	// Returns 1 on success, 0 on error
+	// VISIBLE int driver_copyToLocal(const char* sourcefilename, const char* destfilename);
 
-	//// Copy sourcefilename which is on the local file system to the current file system (s3, hdfs..)
-	//// If the driver is read-only, this function is ignored even if it is implemented
-	//// Returns 1 on success, 0 on error
-	//VISIBLE int driver_copyFromLocal(const char* sourcefilename, const char* destfilename);
+	// Copy sourcefilename which is on the local file system to the current file system (s3, hdfs..)
+	// If the driver is read-only, this function is ignored even if it is implemented
+	// Returns 1 on success, 0 on error
+	// VISIBLE int driver_copyFromLocal(const char* sourcefilename, const char* destfilename);
 
 #ifdef __cplusplus
 } /* extern "C" */

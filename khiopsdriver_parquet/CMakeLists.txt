@@ -4,6 +4,7 @@ project("khiopsdriver_file_parquet" VERSION 1.0.0 LANGUAGES CXX)
 
 find_package(Arrow CONFIG REQUIRED)
 find_package(Parquet CONFIG REQUIRED)
+find_package(boost_uuid CONFIG REQUIRED)
 
 add_library(khiopsdriver_file_parquet SHARED
     khiopsdriver_file_parquet.cpp
@@ -17,6 +18,7 @@ target_link_libraries(khiopsdriver_file_parquet
     PRIVATE
       Arrow::arrow_shared
       Parquet::parquet_shared
+      Boost::uuid
 )
 
 set_target_properties(khiopsdriver_file_parquet PROPERTIES
