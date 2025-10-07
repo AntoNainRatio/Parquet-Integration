@@ -1,0 +1,61 @@
+// 2025-10-06 15:31:27
+// khiops
+// Output command file
+//
+//This file contains recorded commands, that can be replayed.
+//Commands are based on user interactions:
+//	field update
+//	list item selection
+//	menu action
+//Every command can be commented, using //.
+//For example, commenting the last Exit command will allow other
+//user interactions, after the commands have been replayed.
+//
+//
+
+// -> Khiops
+ClassManagement.OpenFile       // Open...
+
+// -> Open
+ClassFileName C:\Users\Public\khiops_data\samples\AccidentsMedium\Accidents.kdic // Dictionary file
+OK                             // Open
+// <- Open
+
+TrainDatabase.DatabaseFiles.List.Key Accident      // List item selection
+TrainDatabase.DatabaseFiles.DataTableName C:/Users/Public/khiops_data/samples/AccidentsMedium/Accidents.txt    // Data table file
+TrainDatabase.DatabaseFiles.List.Key Accident`Place          // List item selection
+TrainDatabase.DatabaseFiles.DataTableName C:/Users/Public/khiops_data/samples/AccidentsMedium/Places.txt       // Data table file
+TrainDatabase.DatabaseFiles.List.Key Accident`Vehicles       // List item selection
+TrainDatabase.DatabaseFiles.DataTableName C:/Users/Public/khiops_data/samples/AccidentsMedium/Vehicles.txt     // Data table file
+TrainDatabase.DatabaseFiles.List.Key Accident`Vehicles`Users // List item selection
+TrainDatabase.DatabaseFiles.DataTableName C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.txt // Data table file
+LearningTools.TransferDatabase // Deploy model...
+
+// -> Deploy model
+TargetDatabase.DatabaseFiles.List.Key Accident     // List item selection
+TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\deploy_model\T_Accidents.txt          // Data table file
+TargetDatabase.DatabaseFiles.List.Key Accident`Place         // List item selection
+TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\deploy_model\T_Places.txt   // Data table file
+TargetDatabase.DatabaseFiles.List.Key Accident`Vehicles      // List item selection
+TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\deploy_model\T_Vehicles.txt // Data table file
+TargetDatabase.DatabaseFiles.List.Key Accident`Vehicles`Users          // List item selection
+TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\deploy_model\T_Users_medium.txt       // Data table file
+SourceDatabase.DatabaseFormatDetector.DetectFileFormat       // Detect file format
+TransferDatabase               // Deploy model
+BuildTransferredClass          // Build deployed dictionary...
+
+// -> Save as
+Exit                           // Cancel
+// <- Save as
+
+Exit                           // Close
+// <- Deploy model
+
+Exit                           // Close
+// <- Khiops
+
+
+// -> Khiops
+OK                             // Yes
+// <- Khiops
+

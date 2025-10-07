@@ -17,7 +17,7 @@
 ClassManagement.BuildClassDefButton      // Build dictionary from data table...
 
 // -> Dictionary builder
-SourceDataTable.DatabaseName parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Accidents.parquet          // Data table file
+SourceDataTable.DatabaseName multifile://C/Users/Public/khiops_data/samples/AccidentsMedium/Accidents.txt          // Data table file
 SourceDataTable.DatabaseFormatDetector.DetectFileFormat      // Detect file format
 BuildClassDef                  // Build dictionary from data table
 

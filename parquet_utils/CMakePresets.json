@@ -10,6 +10,7 @@
           "cacheVariables": {
             "CMAKE_C_COMPILER": "cl.exe",
             "CMAKE_CXX_COMPILER": "cl.exe",
+            "CMAKE_BUILD_TYPE": "Debug",
             "CMAKE_TOOLCHAIN_FILE": "C:/Users/KXFJ3896/Documents/vcpkg/scripts/buildsystems/vcpkg.cmake"
           },
             "condition": {

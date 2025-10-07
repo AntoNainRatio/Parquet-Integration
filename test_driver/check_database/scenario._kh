@@ -22,14 +22,14 @@ OK                             // Open
 // <- Open
 
 TrainDatabase.DatabaseFiles.List.Key Accident      // List item selection
-TrainDatabase.DatabaseFiles.DataTableName parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Accidents.parquet    // Data table file
+TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/Public/khiops_data/samples/Accidents/Accidents.txt    // Data table file
 TrainDatabase.DatabaseFiles.List.Key Accident`Place          // List item selection
-TrainDatabase.DatabaseFiles.DataTableName parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Places.parquet       // Data table file
+TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/Public/khiops_data/samples/Accidents/Places.txt       // Data table file
 TrainDatabase.DatabaseFiles.List.Key Accident`Vehicles       // List item selection
-TrainDatabase.DatabaseFiles.DataTableName parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Vehicles.parquet     // Data table file
+TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/Public/khiops_data/samples/Accidents/Vehicles.txt     // Data table file
 TrainDatabase.DatabaseFiles.List.Key Accident`Vehicles`Users // List item selection
-TrainDatabase.DatabaseFiles.DataTableName parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Users.parquet        // Data table file
-TrainDatabase.HeaderLineUsed false       // Header line used
+TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/Public/khiops_data/samples/Accidents/Users.txt        // Data table file
+TrainDatabase.HeaderLineUsed true       // Header line used
 LearningTools.CheckData        // Check database
 
 Exit                           // Close

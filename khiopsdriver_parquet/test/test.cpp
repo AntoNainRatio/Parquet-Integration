@@ -435,6 +435,71 @@ int test_driver_fseek_all_file_reverse() {
 	return 0;
 }
 
+int fseek_and_read() {
+	std::string parquet = "parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
+
+	MultiFile* mf = driver_fopen(parquet.c_str(), 'r');
+	if (mf == nullptr) {
+		throw std::runtime_error("driver_fopen error during driver_fseek all file test.");
+	}
+	int code;
+
+	code = driver_fseek(mf, -20*sizeof(char), MultiFileWhence::END);
+	if (code == -1) {
+		std::cout << "fseek_and_read test: error seeking to the end - 20 chars." << std::endl;
+		std::cout << driver_getlasterror() << std::endl;
+		return 1;
+	}
+
+	const size_t buffer_size = 2048;
+	char* buffer = (char*)malloc(buffer_size * sizeof(char));
+
+	size_t read_size = 500;
+
+	code = driver_fread(buffer, sizeof(char), read_size, mf);
+	if (code == -1 || code != 20) {
+		std::cout << "fseek_and_read test: error reading the last 20 chars." << std::endl;
+		std::cout << driver_getlasterror() << std::endl;
+		return 1;
+	}
+
+
+	code = driver_fclose(mf);
+	if (code == -1) {
+		throw std::runtime_error("fseek_and_read test: error during fclose");
+	}
+	return 0;
+}
+
+int read_whole_file_in_one_read() {
+	std::string parquet = "parquet://C/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
+
+	MultiFile* mf = driver_fopen(parquet.c_str(), 'r');
+	if (mf == nullptr) {
+		throw std::runtime_error("driver_fopen error during read_whole_file_in_one_read test.");
+	}
+
+	int code;
+	size_t file_size = driver_getFileSize(mf);
+	char* buffer = (char*)malloc(file_size * sizeof(char));
+
+	code = driver_fread(buffer, sizeof(char), file_size, mf);
+	if (code == -1 || code != file_size) {
+		std::cout << "read_whole_file_in_one_read test: error reading the whole file in one read." << std::endl;
+		std::cout << driver_getlasterror() << std::endl;
+		return 1;
+	}
+
+	free(buffer);
+
+	code = driver_fclose(mf);
+	if (code == -1) {
+		throw std::runtime_error("read_whole_file_in_one_read test: error during fclose");
+	}
+
+	return 0;
+}
+
 // return 0 if pass, 1 otherwise
 int verify_code(MultiFile* mf, MultiFileError expected) {
 	if (mf->error_state != expected) {
@@ -475,6 +540,9 @@ int main() {
 	failed += test_driver_fseek_all_file();
 	failed += test_driver_fseek_all_file_reverse();
 	failed += test_driver_fseek_errors();
+
+	failed += fseek_and_read();
+	failed += read_whole_file_in_one_read();
 
 	error_resume(failed);
 
