@@ -148,6 +148,40 @@ int driver_fileExists(const char* filename) {
 
 	valid_path[strlen(globbing_path) + 1] = '\0';
 
+	if (strchr(valid_path, '*') == nullptr) {
+		// add wildcard before the file extension
+		char* dot = strrchr(valid_path, '.');
+		if (dot != nullptr) {
+			size_t base_length = dot - valid_path;
+			char* new_path = (char*)malloc((strlen(valid_path) + 2) * sizeof(char));
+			if (new_path == NULL) {
+				free(valid_path);
+				LogError("driver_fopen: unable to malloc to add wildcard to path");
+				return NULL;
+			}
+			strncpy(new_path, valid_path, base_length);
+			new_path[base_length] = '*';
+			strcpy(&new_path[base_length + 1], dot);
+			free(valid_path);
+			valid_path = new_path;
+		}
+		else {
+			// no extension, just add a '*'
+			char* new_path = (char*)malloc((strlen(valid_path) + 2) * sizeof(char));
+			if (new_path == NULL) {
+				free(valid_path);
+				LogError("driver_fopen: unable to malloc to add wildcard to path");
+				return NULL;
+			}
+			strcpy(new_path, valid_path);
+			new_path[strlen(valid_path)] = '*';
+			new_path[strlen(valid_path) + 1] = '\0';
+			free(valid_path);
+			valid_path = new_path;
+		}
+		// std::cout << "Corrected path to add wildcard: " << valid_path << std::endl;
+	}
+
 	vector<string> filenames = get_matching_files(valid_path);
 	free(valid_path);
 	if (filenames.size() == 0) {
@@ -225,6 +259,40 @@ long long int driver_getFileSize(const char* filename) {
 
 	valid_path[strlen(globbing_path) + 1] = '\0';
 
+	if (strchr(valid_path, '*') == nullptr) {
+		// add wildcard before the file extension
+		char* dot = strrchr(valid_path, '.');
+		if (dot != nullptr) {
+			size_t base_length = dot - valid_path;
+			char* new_path = (char*)malloc((strlen(valid_path) + 2) * sizeof(char));
+			if (new_path == NULL) {
+				free(valid_path);
+				LogError("driver_fopen: unable to malloc to add wildcard to path");
+				return NULL;
+			}
+			strncpy(new_path, valid_path, base_length);
+			new_path[base_length] = '*';
+			strcpy(&new_path[base_length + 1], dot);
+			free(valid_path);
+			valid_path = new_path;
+		}
+		else {
+			// no extension, just add a '*'
+			char* new_path = (char*)malloc((strlen(valid_path) + 2) * sizeof(char));
+			if (new_path == NULL) {
+				free(valid_path);
+				LogError("driver_fopen: unable to malloc to add wildcard to path");
+				return NULL;
+			}
+			strcpy(new_path, valid_path);
+			new_path[strlen(valid_path)] = '*';
+			new_path[strlen(valid_path) + 1] = '\0';
+			free(valid_path);
+			valid_path = new_path;
+		}
+		// std::cout << "Corrected path to add wildcard: " << valid_path << std::endl;
+	}
+
 	vector<string> filenames = get_matching_files(valid_path);
 	if (filenames.size() == 0) {
 		LogError("driver_getFileSize: no files found after finding matching files");
@@ -269,6 +337,39 @@ void* driver_fopen(const char* filename, char mode) {
 
 	valid_path[strlen(globbing_path) + 1] = '\0';
 
+	if (strchr(valid_path, '*') == nullptr) {
+		// add wildcard before the file extension
+		char* dot = strrchr(valid_path, '.');
+		if (dot != nullptr) {
+			size_t base_length = dot - valid_path;
+			char* new_path = (char*)malloc((strlen(valid_path) + 2) * sizeof(char));
+			if (new_path == NULL) {
+				free(valid_path);
+				LogError("driver_fopen: unable to malloc to add wildcard to path");
+				return NULL;
+			}
+			strncpy(new_path, valid_path, base_length);
+			new_path[base_length] = '*';
+			strcpy(&new_path[base_length + 1], dot);
+			free(valid_path);
+			valid_path = new_path;
+		}
+		else {
+			// no extension, just add a '*'
+			char* new_path = (char*)malloc((strlen(valid_path) + 2) * sizeof(char));
+			if (new_path == NULL) {
+				free(valid_path);
+				LogError("driver_fopen: unable to malloc to add wildcard to path");
+				return NULL;
+			}
+			strcpy(new_path, valid_path);
+			new_path[strlen(valid_path)] = '*';
+			new_path[strlen(valid_path) + 1] = '\0';
+			free(valid_path);
+			valid_path = new_path;
+		}
+		// std::cout << "Corrected path to add wildcard: " << valid_path << std::endl;
+	}
 
 	vector<string> filenames = get_matching_files(valid_path);
 	free(valid_path);

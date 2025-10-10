@@ -91,6 +91,7 @@ void worker(std::shared_ptr<arrow::io::ReadableFile> infile, JobQueue& queue, st
             arrow::csv::WriteOptions write_options = arrow::csv::WriteOptions::Defaults();
             write_options.include_header = (job.start == 0);
             write_options.delimiter = '\t';
+            write_options.null_string = "";
             for (int rg = job.start; rg < job.end; rg++) {
                 std::shared_ptr<arrow::Table> table;
                 PARQUET_THROW_NOT_OK(reader->ReadRowGroup(rg, &table));
@@ -190,10 +191,26 @@ int parquetToCsv(const char* parquet_file, const char* prefix, const char* outpu
     return 0;
 }
 
-void delete_chunk_files(const std::vector<std::string>& chunk_files) {
-    for (const auto& file : chunk_files) {
-        fs::remove(file);
+bool delete_dir(const char* output_dir, const char* prefix) {
+    std::filesystem::path search_path = std::filesystem::path(output_dir);
+	std::string pattern = std::string(prefix);
+    if (!std::filesystem::exists(search_path) || !std::filesystem::is_directory(search_path)) {
+        return false;
     }
+    for (const auto& entry : std::filesystem::directory_iterator(search_path)) {
+        if (entry.is_regular_file()) {
+            const std::string& filename = entry.path().filename().string();
+			// Check if the filename starts with the given prefix and ends with .txt
+            if (filename.rfind(pattern, 0) == 0 && filename.size() > pattern.size() && filename.substr(filename.size() - 4) == ".txt") {
+                continue;
+			}
+            else
+            {
+                return false;
+            }
+        }
+    }
+	return fs::remove_all(search_path);
 }
 
 

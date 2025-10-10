@@ -15,7 +15,7 @@ find_package(Arrow CONFIG REQUIRED)
 find_package(Parquet CONFIG REQUIRED)
 
 # Ajoutez une source à l'exécutable de ce projet.
-add_library (parquet_utils "parquet_utils.cpp" "parquet_utils.h"
+add_library (parquet_utils SHARED "parquet_utils.cpp" "parquet_utils.h"
 )
 
 target_link_libraries(parquet_utils PRIVATE
