@@ -517,7 +517,7 @@ int test_file_size() {
 	path = "multifile://C/Users/KXFJ3896/Documents/Parquet-Integration/khiopsdriver_multifile/tests/files/empty";
 	code = driver_getFileSize(path);
 	exp = 0;
-	if (code != 0) {
+	if (code != exp) {
 		print_file_size_error(path, exp, code);
 		failed++;
 	}
@@ -530,6 +530,32 @@ int test_file_size() {
 		failed++;
 	}
 
+	return failed;
+}
+
+int test_driver_wildcard_add() {
+	int failed = 0;
+	int code;
+
+	std::string multifile = "multifile://C/Users/KXFJ3896/Documents/Parquet-Integration/khiopsdriver_multifile/tests/files/file.txt";
+
+	// opening file
+	MultiFile* mf = (MultiFile*)driver_fopen(multifile.c_str(), 'r');
+	if (mf == nullptr) {
+		throw std::runtime_error("driver_fopen error during driver_fread tests.");
+	}
+	if (VERBOSE) {
+		dump_multifile(mf);
+	}
+	if (mf->filenames.size() != 3) {
+		std::cout << "driver_fopen wildcard add test: didn't find all file.txt files. Exp: 3 | Got: " << mf->filenames.size() << "." << std::endl;
+		failed++;
+	}
+
+	code = driver_fclose(mf);
+	if (code == -1) {
+		throw std::runtime_error("driver_fclose error during driver_fseek random tests.");
+	}
 	return failed;
 }
 
@@ -551,6 +577,7 @@ int main() {
 	failed += test_driver_fseek_all_file_reverse();
 
 	failed += test_file_size();
+	failed += test_driver_wildcard_add();
 
 	if (failed == 0) {
 		std::cout << "PASSED: All tests passed" << std::endl;

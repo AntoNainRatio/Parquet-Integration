@@ -16,9 +16,6 @@ def extract_name(table_path):
 def get_multifile_path(temp_dir: str, prefix: str):
     return f"multifile://{temp_dir.replace(':','').replace('\\','/')}/{prefix}.txt"
 
-def get_normal_path(multifile_path):
-    return f"{multifile_path.replace('multifile://c','c:')}"
-
 def convert_parquet_dictionary(parquet_dictionary, temp_dir, verbose=False):
     """"
     Convert a parquet dictionary to the converted dictionary into csv
@@ -43,21 +40,6 @@ def convert_parquet_dictionary(parquet_dictionary, temp_dir, verbose=False):
         result[key] = get_multifile_path(temp_dir,filename)
     return result
 
-def get_output_path(path):
-    tmp = os.path.splitext(path)
-    return get_normal_path(tmp[0] + '_output' + '.txt')
-
-def get_output_dict(dict):
-    res = {}
-    for key,val in dict.items():
-        res[key] = get_output_path(val)
-    return res
-
-def dump_dict(convert_additional):
-    print(f"convert_dict:")
-    for key,val in convert_additional.items():
-        print(f"\tconvert_additional[{key}]: {val}")
-    print(f"End of convert_additional")
 
 def trainpredictor_parquet(dict, dict_name, data_table, target_variable, additional_data_tables,
                            results_dir, temp_dir):
@@ -76,24 +58,9 @@ def trainpredictor_parquet(dict, dict_name, data_table, target_variable, additio
         return result
     
     convert_data = get_multifile_path(temp_dir, filename)
-    print(f"conver_data: {convert_data}")
     convert_additional = convert_parquet_dictionary(additional_data_tables, temp_dir)
-    dump_dict(convert_additional)
-
 
     kh.train_predictor(dict, dict_name, convert_data, target_variable, results_dir, additional_data_tables=convert_additional)
-
-    output_path = get_output_path(data_table)
-    print(f'output_path: {output_path}')
-    output_dict = get_output_dict(additional_data_tables)
-    print("Output_dict:")
-    dump_dict(output_dict)
-    kh.deploy_model(dict,dict_name,
-                    convert_data, output_path,
-                    additional_data_tables = convert_additional,
-                    output_additional_data_tables = output_dict
-    )
-
 
     # shutil.rmtree(temp_dir_b, ignore_errors=False, onerror=None)
 
@@ -141,21 +108,22 @@ if __name__ == "__main__":
         os.path.dirname(__file__),
         "tmp")
 
-
-    trainpredictor_parquet(dict,
-                           dict_name,
-                           data_table,
-                           target_variable,
-                           additional_data_tables_parquet,
-                           results_dir,
-                           temp_dir)
-    
     #########################################################
+
+
+    # trainpredictor_parquet(dict,
+    #                        dict_name,
+    #                        data_table,
+    #                        target_variable,
+    #                        additional_data_tables_parquet,
+    #                        results_dir,
+    #                        temp_dir)
+    
 
     data_table = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Accidents.txt"
     results_dir = os.path.join(
         os.path.dirname(__file__),
-        "results_csv")
+        "results_data_csv")
     
     vehicles_data_file = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Vehicles.txt"
     users_data_file = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.txt"
@@ -174,22 +142,29 @@ if __name__ == "__main__":
                        additional_data_tables=additional_data_tables
                        )
     
-    data_table_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Accidents_output_csv.txt"
+    #########################################################################################
+    #                                   T_DATA                                              #
+    #########################################################################################
+
+    
+    data_table = "C:/Users/KXFJ3896/Documents/Parquet-Integration/test_driver/cd_dm_train/T_files/T_Accidents.txt"
     results_dir = os.path.join(
         os.path.dirname(__file__),
-        "results_csv")
+        "results_T_data_csv")
     
-    vehicles_data_file_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Vehicles_output_csv.txt"
-    users_data_file_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium_output_csv.txt"
-    places_data_file_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Places_output_csv.txt"
-    additional_data_tables_out={
-        "Accident`Vehicles": vehicles_data_file_out,
-        "Accident`Vehicles`Users":  users_data_file_out,
-        "Accident`Place": places_data_file_out,
+    vehicles_data_file = "C:/Users/KXFJ3896/Documents/Parquet-Integration/test_driver/cd_dm_train/T_files/T_Vehicles.txt"
+    users_data_file = "C:/Users/KXFJ3896/Documents/Parquet-Integration/test_driver/cd_dm_train/T_files/T_Users_medium.txt"
+    places_data_file = "C:/Users/KXFJ3896/Documents/Parquet-Integration/test_driver/cd_dm_train/T_files/T_Places.txt"
+    additional_data_tables={
+        "Accident`Vehicles": vehicles_data_file,
+        "Accident`Vehicles`Users":  users_data_file,
+        "Accident`Place": places_data_file,
     }
 
-    kh.deploy_model(dict, dict_name,
-                    data_table,
-                    data_table_out,
-                    additional_data_tables=additional_data_tables,
-                    output_additional_data_tables=additional_data_tables_out)
+    kh.train_predictor(dict,
+                       dict_name,
+                       data_table,
+                       target_variable,
+                       results_dir,
+                       additional_data_tables=additional_data_tables
+                       )
