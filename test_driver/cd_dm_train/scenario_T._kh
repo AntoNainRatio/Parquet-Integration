@@ -22,13 +22,13 @@ OK                             // Open
 // <- Open
 
 TrainDatabase.DatabaseFiles.List.Key Accident      // List item selection
-TrainDatabase.DatabaseFiles.DataTableName C:/Users/Public/khiops_data/samples/AccidentsMedium/Accidents.txt    // Data table file
+TrainDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Accidents.txt    // Data table file
 TrainDatabase.DatabaseFiles.List.Key Accident`Place          // List item selection
-TrainDatabase.DatabaseFiles.DataTableName C:/Users/Public/khiops_data/samples/AccidentsMedium/Places.txt       // Data table file
+TrainDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Places.txt       // Data table file
 TrainDatabase.DatabaseFiles.List.Key Accident`Vehicles       // List item selection
-TrainDatabase.DatabaseFiles.DataTableName C:/Users/Public/khiops_data/samples/AccidentsMedium/Vehicles.txt     // Data table file
+TrainDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Vehicles.txt     // Data table file
 TrainDatabase.DatabaseFiles.List.Key Accident`Vehicles`Users // List item selection
-TrainDatabase.DatabaseFiles.DataTableName C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.txt // Data table file
+TrainDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Users_medium.txt // Data table file
 AnalysisSpec.TargetAttributeName Gravity // Target variable
 AnalysisSpec.PredictorsSpec.SelectiveNaiveBayesPredictor true         // Selective Naive Bayes predictor
 AnalysisResults.ResultFilesDirectory C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files     // Result files directory
@@ -37,13 +37,13 @@ LearningTools.TransferDatabase // Deploy model...
 
 // -> Deploy model
 TargetDatabase.DatabaseFiles.List.Key Accident     // List item selection
-TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Accidents.txt   // Data table file
+TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Accidents1.txt   // Data table file
 TargetDatabase.DatabaseFiles.List.Key Accident`Place         // List item selection
-TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Places.txt      // Data table file
+TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Places1.txt      // Data table file
 TargetDatabase.DatabaseFiles.List.Key Accident`Vehicles      // List item selection
-TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Vehicles.txt    // Data table file
+TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Vehicles1.txt    // Data table file
 TargetDatabase.DatabaseFiles.List.Key Accident`Vehicles`Users          // List item selection
-TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Users_medium.txt          // Data table file
+TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Users_medium1.txt          // Data table file
 TransferDatabase               // Deploy model
 Exit                           // Close
 // <- Deploy model
