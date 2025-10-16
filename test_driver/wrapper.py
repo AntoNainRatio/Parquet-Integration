@@ -44,8 +44,9 @@ def convert_parquet_dictionary(parquet_dictionary, temp_dir, verbose=False):
     return result
 
 def get_output_path(path):
-    tmp = os.path.splitext(path)
-    return get_normal_path(tmp[0] + '_output' + '.txt')
+    tmp = os.path.split(path)
+    output_dir = "C:/Users/KXFJ3896/Documents/Parquet-Integration/test_driver/output"
+    return get_normal_path(output_dir+'/'+os.path.splitext(tmp[0])[0] + '_output' + '.txt')
 
 def get_output_dict(dict):
     res = {}
@@ -81,18 +82,18 @@ def trainpredictor_parquet(dict, dict_name, data_table, target_variable, additio
     dump_dict(convert_additional)
 
 
-    kh.train_predictor(dict, dict_name, convert_data, target_variable, results_dir, additional_data_tables=convert_additional)
+    kh.train_predictor(dict, dict_name, convert_data, target_variable, results_dir, additional_data_tables=convert_additional, output_scenario_path=results_dir+'\\scenario._kh')
 
-    output_path = get_output_path(data_table)
-    print(f'output_path: {output_path}')
-    output_dict = get_output_dict(additional_data_tables)
-    print("Output_dict:")
-    dump_dict(output_dict)
-    kh.deploy_model(dict,dict_name,
-                    convert_data, output_path,
-                    additional_data_tables = convert_additional,
-                    output_additional_data_tables = output_dict
-    )
+    # output_path = get_output_path(data_table)
+    # print(f'output_path: {output_path}')
+    # output_dict = get_output_dict(additional_data_tables)
+    # print("Output_dict:")
+    # dump_dict(output_dict)
+    # kh.deploy_model(dict,dict_name,
+    #                 convert_data, output_path,
+    #                 additional_data_tables = convert_additional,
+    #                 output_additional_data_tables = output_dict
+    # )
 
 
     # shutil.rmtree(temp_dir_b, ignore_errors=False, onerror=None)
@@ -135,7 +136,7 @@ if __name__ == "__main__":
 
     results_dir = os.path.join(
         os.path.dirname(__file__),
-        "results")
+        "results_parq")
     
     temp_dir = os.path.join(
         os.path.dirname(__file__),
@@ -171,25 +172,26 @@ if __name__ == "__main__":
                        data_table,
                        target_variable,
                        results_dir,
-                       additional_data_tables=additional_data_tables
+                       additional_data_tables=additional_data_tables,
+                       output_scenario_path=results_dir+'\\scenario._kh'
                        )
     
-    data_table_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Accidents_output_csv.txt"
-    results_dir = os.path.join(
-        os.path.dirname(__file__),
-        "results_csv")
+    # data_table_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Accidents_output_csv.txt"
+    # results_dir = os.path.join(
+    #     os.path.dirname(__file__),
+    #     "results_csv")
     
-    vehicles_data_file_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Vehicles_output_csv.txt"
-    users_data_file_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium_output_csv.txt"
-    places_data_file_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Places_output_csv.txt"
-    additional_data_tables_out={
-        "Accident`Vehicles": vehicles_data_file_out,
-        "Accident`Vehicles`Users":  users_data_file_out,
-        "Accident`Place": places_data_file_out,
-    }
+    # vehicles_data_file_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Vehicles_output_csv.txt"
+    # users_data_file_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium_output_csv.txt"
+    # places_data_file_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Places_output_csv.txt"
+    # additional_data_tables_out={
+    #     "Accident`Vehicles": vehicles_data_file_out,
+    #     "Accident`Vehicles`Users":  users_data_file_out,
+    #     "Accident`Place": places_data_file_out,
+    # }
 
-    kh.deploy_model(dict, dict_name,
-                    data_table,
-                    data_table_out,
-                    additional_data_tables=additional_data_tables,
-                    output_additional_data_tables=additional_data_tables_out)
+    # kh.deploy_model(dict, dict_name,
+    #                 data_table,
+    #                 data_table_out,
+    #                 additional_data_tables=additional_data_tables,
+    #                 output_additional_data_tables=additional_data_tables_out)
