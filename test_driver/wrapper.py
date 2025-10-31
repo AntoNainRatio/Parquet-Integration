@@ -82,7 +82,13 @@ def trainpredictor_parquet(dict, dict_name, data_table, target_variable, additio
     dump_dict(convert_additional)
 
 
-    kh.train_predictor(dict, dict_name, convert_data, target_variable, results_dir, additional_data_tables=convert_additional, output_scenario_path=results_dir+'\\scenario._kh')
+    kh.train_predictor(dict, dict_name, 
+                       convert_data, 
+                       target_variable, 
+                       results_dir, 
+                       additional_data_tables=convert_additional, 
+                       output_scenario_path=results_dir+'\\scenario._kh',
+                       max_constructed_variables=500)
 
     # output_path = get_output_path(data_table)
     # print(f'output_path: {output_path}')
@@ -173,7 +179,8 @@ if __name__ == "__main__":
                        target_variable,
                        results_dir,
                        additional_data_tables=additional_data_tables,
-                       output_scenario_path=results_dir+'\\scenario._kh'
+                       output_scenario_path=results_dir+'\\scenario._kh',
+                        max_constructed_variables=500
                        )
     
     # data_table_out = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Accidents_output_csv.txt"

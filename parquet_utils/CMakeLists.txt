@@ -11,12 +11,28 @@ endif()
 
 project ("parquet_utils" VERSION 1.0.0 LANGUAGES CXX)
 
-find_package(Arrow CONFIG REQUIRED)
-find_package(Parquet CONFIG REQUIRED)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_BUILD_TYPE Release)
 
-# Ajoutez une source à l'exécutable de ce projet.
+#set(ARROW_HOME "C:/Users/KXFJ3896/Documents/arrow/cpp/build/install")
+
+#set(CMAKE_PREFIX_PATH "${ARROW_HOME}")
+#set(CMAKE_MODULE_PATH "${ARROW_HOME}/lib/cmake/arrow" "${ARROW_HOME}/lib/cmake/parquet" ${CMAKE_MODULE_PATH})
+
+find_package(Arrow REQUIRED)
+find_package(Parquet REQUIRED)
+
 add_library (parquet_utils SHARED "parquet_utils.cpp" "parquet_utils.h"
 )
+
+#target_include_directories(parquet_utils PRIVATE
+#    ${ARROW_INCLUDE_DIR}
+#    ${CMAKE_CURRENT_SOURCE_DIR}/include
+#)
+
+#include_directories("${ARROW_HOME}/include")
+#link_directories("${ARROW_HOME}/lib")
 
 target_link_libraries(parquet_utils PRIVATE
         Arrow::arrow_shared
@@ -44,3 +60,7 @@ target_include_directories(parquet_utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(main "main.cpp")
 target_link_libraries(main PRIVATE parquet_utils)
+target_link_libraries(main PRIVATE
+        Arrow::arrow_shared
+        Parquet::parquet_shared
+)

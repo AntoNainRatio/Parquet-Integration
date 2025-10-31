@@ -14,6 +14,15 @@
 //
 
 // -> Khiops
+AnalysisSpec.PredictorsSpec.AdvancedSpec.InspectConstructionDomain     //  Variable construction parameters 
+
+// -> Variable construction parameters
+ConstructionRules.List.Key TableSelection          // List item selection
+ConstructionRules.Used false   // Used
+Exit                           // Close
+// <- Variable construction parameters
+
+// -> Khiops
 ClassManagement.OpenFile       // Open...
 
 // -> Open
@@ -32,23 +41,10 @@ TrainDatabase.DatabaseFiles.DataTableName C:/Users/Public/khiops_data/samples/Ac
 AnalysisSpec.TargetAttributeName Gravity // Target variable
 AnalysisSpec.PredictorsSpec.SelectiveNaiveBayesPredictor true         // Selective Naive Bayes predictor
 AnalysisResults.ResultFilesDirectory C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files     // Result files directory
-LearningTools.CheckData        // Check database
-LearningTools.TransferDatabase // Deploy model...
-
-// -> Deploy model
-TargetDatabase.DatabaseFiles.List.Key Accident     // List item selection
-TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Accidents.txt   // Data table file
-TargetDatabase.DatabaseFiles.List.Key Accident`Place         // List item selection
-TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Places.txt      // Data table file
-TargetDatabase.DatabaseFiles.List.Key Accident`Vehicles      // List item selection
-TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Vehicles.txt    // Data table file
-TargetDatabase.DatabaseFiles.List.Key Accident`Vehicles`Users          // List item selection
-TargetDatabase.DatabaseFiles.DataTableName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files\T_Users_medium.txt          // Data table file
-TransferDatabase               // Deploy model
-Exit                           // Close
-// <- Deploy model
 
 LearningTools.ComputeStats     // Train model
+AnalysisSpec.PredictorsSpec.ConstructionSpec.MaxConstructedAttributeNumber 500   // Max number of constructed variables
+ComputeStats                   // Train model
 Exit                           // Close
 // <- Khiops
 

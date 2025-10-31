@@ -14,9 +14,10 @@ project ("ParquetToCsv")
 # recherche packages
 find_package(Arrow REQUIRED)
 find_package(Parquet REQUIRED)
+find_package(DuckDB REQUIRED)
 
 # Ajoutez une source à l'exécutable de ce projet.
-add_executable (ParquetToCsv  "Multi.cpp" "ParquetToCsv.h")
+add_executable (ParquetToCsv "ParquetToCsv.h" "duckdb_conversion.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET ParquetToCsv PROPERTY CXX_STANDARD 20)
@@ -26,6 +27,7 @@ endif()
 target_link_libraries("ParquetToCsv"
 						PRIVATE 
 						Arrow::arrow_shared
-						Parquet::parquet_shared)
+						Parquet::parquet_shared
+						DuckDB::duckdb)
 
 # TODO: Ajoutez des tests et installez des cibles si nécessaire.

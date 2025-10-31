@@ -25,6 +25,8 @@
 namespace fs = std::filesystem;
 using namespace std::chrono;
 
+char delimiter = '\t';
+
 struct RowGroupJob {
     int start;
     int end;
@@ -93,7 +95,7 @@ void worker(std::shared_ptr<arrow::io::ReadableFile> infile, JobQueue& queue, st
 
             arrow::csv::WriteOptions write_options = arrow::csv::WriteOptions::Defaults();
             write_options.include_header = (job.start == 0);
-            write_options.delimiter = ',';
+            write_options.delimiter = delimiter;
             write_options.null_string = "";
             write_options.quoting_style = arrow::csv::QuotingStyle::Needed;
 
@@ -115,6 +117,15 @@ void worker(std::shared_ptr<arrow::io::ReadableFile> infile, JobQueue& queue, st
             log("Error in job " + std::to_string(job.job_id) + ": " + e.what());
         }
     }
+}
+
+bool isQuotingNeeded(const std::string& value, const char separator) {
+    for(const char& c: value) {
+        if (c == '"' || c == separator || c == '\n' || c == '\r') {
+            return true;
+        }
+	}
+    return false;
 }
 
 void worker_gpt(std::shared_ptr<arrow::io::ReadableFile> infile,
@@ -186,13 +197,7 @@ void worker_gpt(std::shared_ptr<arrow::io::ReadableFile> infile,
                                 value = s->value ? s->value->ToString() : "";
 
                                 // --- Apply CSV quoting rules only for strings ---
-                                bool must_quote = false;
-                                if (value.find('"') != std::string::npos ||
-                                    value.find('\t') != std::string::npos ||
-                                    value.find('\n') != std::string::npos ||
-                                    value.find('\r') != std::string::npos) {
-                                    must_quote = true;
-                                }
+                                bool must_quote = isQuotingNeeded(value, delimiter);
 
                                 if (must_quote) {
                                     // Double internal quotes
@@ -301,7 +306,7 @@ int parquetToCsv(const char* parquet_file, const char* prefix, const char* outpu
 
 
         auto total_end = high_resolution_clock::now();
-        //std::cout << "Total execution time: " << duration_cast<milliseconds>(total_end - total_start) << std::endl;
+        std::cout << "Total execution time: " << duration_cast<milliseconds>(total_end - total_start) << std::endl;
 
     }
     catch (const std::exception& e) {

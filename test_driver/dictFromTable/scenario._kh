@@ -17,7 +17,7 @@
 ClassManagement.BuildClassDefButton      // Build dictionary from data table...
 
 // -> Dictionary builder
-SourceDataTable.DatabaseName multifile://C/Users/Public/khiops_data/samples/AccidentsMedium/Accidents.txt          // Data table file
+SourceDataTable.DatabaseName multifile://C/Users/KXFJ3896/Documents/Parquet-Integration/parquet_utils/Accidents/toto.txt          // Data table file
 SourceDataTable.DatabaseFormatDetector.DetectFileFormat      // Detect file format
 BuildClassDef                  // Build dictionary from data table
 
@@ -30,7 +30,7 @@ Exit                           // Close
 
 
 // -> Save as
-ClassFileName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\dictFromTable\AccidentsMedium.kdic      // Dictionary file
+ClassFileName C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\dictFromTable\AccidentsMediumDQ.kdic      // Dictionary file
 OK                             // Save
 // <- Save as
 

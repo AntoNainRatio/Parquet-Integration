@@ -22,13 +22,13 @@ OK                             // Open
 // <- Open
 
 TrainDatabase.DatabaseFiles.List.Key Accident      // List item selection
-TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/Public/khiops_data/samples/Accidents/Accidents.txt    // Data table file
+TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/KXFJ3896/Documents/Parquet-Integration/parquet_utils/Accidents/toto.txt    // Data table file
 TrainDatabase.DatabaseFiles.List.Key Accident`Place          // List item selection
-TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/Public/khiops_data/samples/Accidents/Places.txt       // Data table file
+TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/KXFJ3896/Documents/Parquet-Integration/parquet_utils/Places/toto*.txt       // Data table file
 TrainDatabase.DatabaseFiles.List.Key Accident`Vehicles       // List item selection
-TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/Public/khiops_data/samples/Accidents/Vehicles.txt     // Data table file
+TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/KXFJ3896/Documents/Parquet-Integration/parquet_utils/Vehicles/toto*.txt     // Data table file
 TrainDatabase.DatabaseFiles.List.Key Accident`Vehicles`Users // List item selection
-TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/KXFJ3896/Documents/Parquet-Integration/parquet_utils/output_dir/toto*.txt        // Data table file
+TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/KXFJ3896/Documents/Parquet-Integration/parquet_utils/Users_medium/toto*.txt        // Data table file
 TrainDatabase.HeaderLineUsed true       // Header line used
 LearningTools.CheckData        // Check database
 

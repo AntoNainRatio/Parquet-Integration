@@ -1,0 +1,88 @@
+// 2025-10-29 16:32:24
+// khiops
+// Output command file
+//
+//This file contains recorded commands, that can be replayed.
+//Commands are based on user interactions:
+//	field update
+//	list item selection
+//	menu action
+//Every command can be commented, using //.
+//For example, commenting the last Exit command will allow other
+//user interactions, after the commands have been replayed.
+//
+//
+
+// -> Khiops
+ClassManagement.OpenFile       // Open...
+
+// -> Open
+ClassFileName C:/Users/Public/khiops_data/samples/AccidentsMedium/Accidents.kdic // Dictionary file
+OK                             // Open
+// <- Open
+
+ClassManagement.ClassName Accident       // Analysis dictionary
+TrainDatabase.DatabaseFiles.List.Key Accident      // List item selection
+TrainDatabase.DatabaseFiles.DataTableName multifile://c/Users/KXFJ3896/Documents/Parquet-Integration/test_driver/tmp/Accidents.txt // Data table file
+TrainDatabase.DatabaseFiles.List.Key Accident`Vehicles       // List item selection
+TrainDatabase.DatabaseFiles.DataTableName multifile://c/Users/KXFJ3896/Documents/Parquet-Integration/test_driver/tmp/Vehicles.txt  // Data table file
+TrainDatabase.DatabaseFiles.List.Key Accident`Vehicles`Users // List item selection
+TrainDatabase.DatabaseFiles.DataTableName multifile://c/Users/KXFJ3896/Documents/Parquet-Integration/test_driver/tmp/Users_medium.txt        // Data table file
+TrainDatabase.DatabaseFiles.List.Key Accident`Place          // List item selection
+TrainDatabase.DatabaseFiles.DataTableName multifile://c/Users/KXFJ3896/Documents/Parquet-Integration/test_driver/tmp/Places.txt    // Data table file
+TrainDatabase.HeaderLineUsed true        // Header line used
+TrainDatabase.FieldSeparator   // Field separator
+TrainDatabase.DatabaseFormatDetector.DetectFileFormat        // Detect file format
+TrainDatabase.SampleNumberPercentage 70.0          // Sample percentage
+TrainDatabase.SamplingMode Include sample          // Sampling mode
+TrainDatabase.SelectionAttribute         // Selection variable
+TrainDatabase.SelectionValue   // Selection value
+TrainDatabase.TestDatabaseSpecificationMode Complementary    // Test database
+AnalysisSpec.TargetAttributeName Gravity // Target variable
+AnalysisSpec.MainTargetModality          // Main target value
+AnalysisSpec.PredictorsSpec.SelectiveNaiveBayesPredictor true          // Selective Naive Bayes predictor
+AnalysisSpec.PredictorsSpec.AdvancedSpec.UnivariatePredictorNumber 0   // Number of univariate predictors
+AnalysisSpec.PredictorsSpec.AdvancedSpec.InspectSelectiveNaiveBayesParameters    //  Selective Naive Bayes parameters 
+
+// -> Selective Naive Bayes
+TrainParameters.MaxEvaluatedAttributeNumber 0      // Max number of evaluated variables
+SelectionParameters.MaxSelectedAttributeNumber 0   // Max number of selected variables
+Exit                           // Close
+// <- Selective Naive Bayes
+
+AnalysisSpec.PredictorsSpec.ConstructionSpec.MaxTreeNumber 10          // Max number of trees
+AnalysisSpec.PredictorsSpec.ConstructionSpec.MaxAttributePairNumber 0  // Max number of variable pairs
+AnalysisSpec.PredictorsSpec.AdvancedSpec.InspectAttributePairsParameters         //  Variable pairs parameters 
+
+// -> Variable pairs parameters
+AllAttributePairs true         // All pairs
+Exit                           // Close
+// <- Variable pairs parameters
+
+AnalysisSpec.PredictorsSpec.ConstructionSpec.MaxConstructedAttributeNumber 500   // Max number of constructed variables
+AnalysisSpec.PredictorsSpec.AdvancedSpec.InspectConstructionDomain     //  Variable construction parameters 
+
+// -> Variable construction parameters
+Exit                           // Close
+// <- Variable construction parameters
+
+AnalysisSpec.PreprocessingSpec.TargetGrouped false // Group target values
+AnalysisSpec.PreprocessingSpec.DiscretizerSpec.SupervisedMethodName MODL         // Supervised method
+AnalysisSpec.PreprocessingSpec.DiscretizerSpec.UnsupervisedMethodName MODL       // Unsupervised method
+AnalysisSpec.PreprocessingSpec.DiscretizerSpec.MinIntervalFrequency 0  // Min interval frequency
+AnalysisSpec.PreprocessingSpec.DiscretizerSpec.MaxIntervalNumber 0     // Max interval number
+AnalysisSpec.PreprocessingSpec.GrouperSpec.SupervisedMethodName MODL   // Supervised method
+AnalysisSpec.PreprocessingSpec.GrouperSpec.UnsupervisedMethodName MODL // Unsupervised method
+AnalysisSpec.PreprocessingSpec.GrouperSpec.MinGroupFrequency 0         // Min group frequency
+AnalysisSpec.PreprocessingSpec.GrouperSpec.MaxGroupNumber 0  // Max group number
+AnalysisResults.ResultFilesDirectory c:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\results_parq  // Result files directory
+AnalysisResults.ResultFilesPrefix        // Result files prefix
+ComputeStats                   // Train model
+ClassManagement.Quit           // Quit
+// <- Khiops
+
+
+// -> Khiops
+OK                             // Yes
+// <- Khiops
+
