@@ -14,15 +14,6 @@
 //
 
 // -> Khiops
-AnalysisSpec.PredictorsSpec.AdvancedSpec.InspectConstructionDomain     //  Variable construction parameters 
-
-// -> Variable construction parameters
-ConstructionRules.List.Key TableSelection          // List item selection
-ConstructionRules.Used false   // Used
-Exit                           // Close
-// <- Variable construction parameters
-
-// -> Khiops
 ClassManagement.OpenFile       // Open...
 
 // -> Open
@@ -41,9 +32,9 @@ TrainDatabase.DatabaseFiles.DataTableName multifile://C/Users/KXFJ3896/Documents
 AnalysisSpec.TargetAttributeName Gravity // Target variable
 AnalysisSpec.PredictorsSpec.SelectiveNaiveBayesPredictor true         // Selective Naive Bayes predictor
 AnalysisResults.ResultFilesDirectory C:\Users\KXFJ3896\Documents\Parquet-Integration\test_driver\cd_dm_train\T_files     // Result files directory
+
 LearningTools.ComputeStats     // Train model
-AnalysisSpec.PredictorsSpec.ConstructionSpec.MaxConstructedAttributeNumber 500   // Max number of constructed variables
-ComputeStats                   // Train model
+
 Exit                           // Close
 // <- Khiops
 

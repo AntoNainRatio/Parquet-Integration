@@ -296,7 +296,7 @@ int parquetToCsv(const char* parquet_file, const char* prefix, const char* outpu
 
         // starting worker threads
         for (int i = 0; i < num_threads; i++) {
-            threads.emplace_back(worker_gpt, infile, std::ref(queue), std::ref(chunk_mutex), std::ref(prefix_string), std::ref(output_dir_string));
+            threads.emplace_back(worker, infile, std::ref(queue), std::ref(chunk_mutex), std::ref(prefix_string), std::ref(output_dir_string));
         }
 
         queue.set_finished();
