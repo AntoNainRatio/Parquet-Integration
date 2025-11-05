@@ -25,10 +25,10 @@ enum class MultiFileWhence {
 
 // multi-file structure acting as a single large file
 struct MultiFile {
-	std::string filepath;               // original filepath used to open the multifile
-	std::vector<std::string> filenames;
-	std::vector<uint64_t> file_sizes;
-    std::vector<uint64_t> prefix_offsets;
+	std::string filepath;					// original filepath used to open the multifile
+	std::vector<std::string> filenames;     // list of the mono-files composing the multi-file
+	std::vector<uint64_t> file_sizes;       // sizes of the mono-files
+	std::vector<uint64_t> prefix_offsets;   // prefix offsets of the mono-files in the multi-file
     uint64_t total_size = 0;
 
 	size_t current_index = 0;               // index of the current file
