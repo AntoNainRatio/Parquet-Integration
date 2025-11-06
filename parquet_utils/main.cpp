@@ -2,11 +2,14 @@
 #include "parquet_utils.h"
 
 #define DELETION false
-#define MERGE true
+#define MERGE false
 
 int main() {
 	const char* filename = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
+	
 	const char* output_dir = "C:/Users/KXFJ3896/Documents/Parquet-Integration/parquet_utils/Users_medium";
+	// const char* output_dir = "gs://Users/KXFJ3896/Documents/Parquet-Integration/parquet_utils/Users_medium";
+	
 	const char* prefix = "toto";
 	const char* merged_prefix = "Users_medium_conversion";
 

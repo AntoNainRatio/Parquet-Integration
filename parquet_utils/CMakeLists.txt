@@ -22,9 +22,11 @@ set(CMAKE_BUILD_TYPE Release)
 
 find_package(Arrow REQUIRED)
 find_package(Parquet REQUIRED)
+find_package(google_cloud_cpp_storage CONFIG REQUIRED)
 
 add_library (parquet_utils SHARED "parquet_utils.cpp" "parquet_utils.h"
-)
+                        "job_handler.h" 
+                        "io_backend.cpp" "io_backend.h")
 
 #target_include_directories(parquet_utils PRIVATE
 #    ${ARROW_INCLUDE_DIR}
@@ -37,6 +39,7 @@ add_library (parquet_utils SHARED "parquet_utils.cpp" "parquet_utils.h"
 target_link_libraries(parquet_utils PRIVATE
         Arrow::arrow_shared
         Parquet::parquet_shared
+        google-cloud-cpp::storage
 )
 
 set_target_properties(parquet_utils PROPERTIES
