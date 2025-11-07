@@ -10,12 +10,10 @@
 
 std::unique_ptr<StorageBackend> select_backend(const std::string& uri) {
     if (uri.rfind("gs://", 0) == 0) {
-		std::cout << "Utilisation du backend GCS pour l'URI : " << uri << std::endl;
         // Extraire le nom du bucket et le chemin objet
         std::string bucket, object;
         size_t first_slash = uri.find('/', 5);
         bucket = uri.substr(5, first_slash - 5);
-        object = uri.substr(first_slash + 1);
 
         auto client = std::make_shared<google::cloud::storage::Client>(
             google::cloud::storage::Client::CreateDefaultClient().value()

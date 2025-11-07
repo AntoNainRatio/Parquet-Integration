@@ -7,6 +7,8 @@
 #include "google/cloud/storage/client.h"
 #include <google/cloud/storage/object_write_stream.h>
 
+#include "gcs_stream.h"
+
 class StorageBackend {
 public:
     virtual std::shared_ptr<arrow::io::RandomAccessFile> openInput(const std::string& path) = 0;
@@ -42,22 +44,35 @@ public:
 
 class GCSBackend : public StorageBackend {
 public:
-    GCSBackend(std::shared_ptr<google::cloud::storage::Client> client, const std::string& bucket)
-        : client_(client), bucket_(bucket) {
+    GCSBackend(std::shared_ptr<google::cloud::storage::Client> client,
+        const std::string& bucket)
+        : client_(std::move(client)), bucket_(bucket) {
     }
 
     std::shared_ptr<arrow::io::RandomAccessFile> openInput(const std::string& path) override {
-        // Ici tu pourrais implémenter une classe GCSRandomAccessFile
-        // ou lire en mémoire via client_->ReadObject(bucket_, path)
-        throw std::runtime_error("Lecture GCS non encore implémentée");
+        /*std::string object_name = extractObjectName(path);
+        auto stream = std::make_shared<GCSInputStream>(client_, bucket_, object_name);
+        return stream;*/
+        throw std::runtime_error("GCSBackend::openInput not implemented yet");
     }
 
     std::shared_ptr<arrow::io::OutputStream> openOutput(const std::string& path) override {
-        // Pareil : soit un wrapper OutputStream, soit écriture buffer + upload
-        throw std::runtime_error("Écriture GCS non encore implémentée");
+        std::string object_name = extractObjectName(path);
+        auto stream = std::make_shared<GCSOutputStream>(client_, bucket_, object_name);
+        return stream;
     }
 
 private:
+    std::string extractObjectName(const std::string& uri) {
+        // Convertit "gs://bucket/path/to/file.txt" en "path/to/file.txt"
+        if (uri.rfind("gs://", 0) == 0) {
+            size_t first_slash = uri.find('/', 5);
+            if (first_slash == std::string::npos) return "";
+            return uri.substr(first_slash + 1);
+        }
+        return uri;
+    }
+
     std::shared_ptr<google::cloud::storage::Client> client_;
     std::string bucket_;
 };

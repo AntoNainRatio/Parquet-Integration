@@ -277,7 +277,6 @@ int parquetToCsv(const char* parquet_file, const char* prefix, const char* outpu
         // waiting for all threads to finish
         for (auto& t : threads) t.join();
 
-
         auto total_end = high_resolution_clock::now();
         std::cout << "Total execution time: " << duration_cast<milliseconds>(total_end - total_start) << std::endl;
 

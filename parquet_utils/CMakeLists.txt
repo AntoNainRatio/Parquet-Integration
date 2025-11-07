@@ -26,7 +26,7 @@ find_package(google_cloud_cpp_storage CONFIG REQUIRED)
 
 add_library (parquet_utils SHARED "parquet_utils.cpp" "parquet_utils.h"
                         "job_handler.h" 
-                        "io_backend.cpp" "io_backend.h")
+                        "io_backend.cpp" "io_backend.h"  "gcs_stream.h")
 
 #target_include_directories(parquet_utils PRIVATE
 #    ${ARROW_INCLUDE_DIR}
