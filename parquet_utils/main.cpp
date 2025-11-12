@@ -5,14 +5,14 @@
 #define MERGE false
 
 int main() {
-	const char* filename = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Users_medium.parquet";
-	//const char* filename = "gs://test-parquet-khiops/parquet_data/Medium/Users_medium.parquet";
+	//const char* filename = "C:/Users/Public/khiops_data/samples/Accidents_Medium/Users_medium.parquet";
+	const char* filename = "gs://test-parquet-khiops/parquet_data/Medium/Users_medium.parquet";
 	
-	//const char* output_dir = "C:/Users/KXFJ3896/Documents/Parquet-Integration/parquet_utils/Users_medium";
-	const char* output_dir = "gs://test-parquet-khiops/output_data/Users_medium";
+	const char* output_dir = "C:/Users/KXFJ3896/Documents/Parquet-Integration/parquet_utils/Users_medium";
+	//const char* output_dir = "gs://test-parquet-khiops/output_data/Users_medium";
 	
-	const char* prefix = "Users_medium_output";
-	const char* merged_prefix = "Users_medium_conversion";
+	const char* prefix = "Users_output";
+	const char* merged_prefix = "Users_conversion";
 
 
 	int return_code = parquetToCsv(filename, prefix, output_dir);
