@@ -50,10 +50,10 @@ public:
     }
 
     std::shared_ptr<arrow::io::RandomAccessFile> openInput(const std::string& path) override {
-        /*std::string object_name = extractObjectName(path);
+        std::string object_name = extractObjectName(path);
         auto stream = std::make_shared<GCSInputStream>(client_, bucket_, object_name);
-        return stream;*/
-        throw std::runtime_error("GCSBackend::openInput not implemented yet");
+        return stream;
+        //throw std::runtime_error("GCSBackend::openInput not implemented yet");
     }
 
     std::shared_ptr<arrow::io::OutputStream> openOutput(const std::string& path) override {
