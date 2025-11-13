@@ -9,6 +9,7 @@ on:
     paths:
       - 'parquet_utils/**'
       - '.github/workflows/test_parquet_utils.yml'
+  workflow_dispatch:
 
 jobs:
   build:
