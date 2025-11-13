@@ -51,6 +51,8 @@ void worker(StorageBackend& input_backend, StorageBackend& output_backend, const
 
     while (true) {
         RowGroupJob job;
+
+		// if no more jobs, exit
         if (!queue.pop(job)) break;
 
         try {
@@ -94,6 +96,7 @@ bool isQuotingNeeded(const std::string& value, const char separator) {
     return false;
 }
 
+// worker processing jobs from the queue (manual CSV writing with minimal quoting)
 void worker_gpt(std::shared_ptr<arrow::io::ReadableFile> infile,
     JobQueue& queue,
     std::mutex& chunk_mutex,
@@ -204,6 +207,7 @@ void worker_gpt(std::shared_ptr<arrow::io::ReadableFile> infile,
 
 
 // get chunk index based on the name of the csv
+// e.g. prefix_0.txt -> 0
 int extract_chunk_index(const std::string& filename) {
     std::regex re("(\\d+)\\.txt$");
     std::smatch match;

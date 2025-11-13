@@ -10,7 +10,6 @@
 
 std::unique_ptr<StorageBackend> select_backend(const std::string& uri) {
     if (uri.rfind("gs://", 0) == 0) {
-        // Extraire le nom du bucket et le chemin objet
         std::string bucket, object;
         size_t first_slash = uri.find('/', 5);
         bucket = uri.substr(5, first_slash - 5);
@@ -21,11 +20,10 @@ std::unique_ptr<StorageBackend> select_backend(const std::string& uri) {
         return std::make_unique<GCSBackend>(client, bucket);
     }
     else if (uri.rfind("s3://", 0) == 0) {
-        // Même logique pour AWS S3
         throw std::runtime_error("Backend S3 non encore implémenté");
     }
     else {
-        // Aucun schéma → lecture/écriture locale
+        // default case
         return std::make_unique<LocalBackend>();
     }
 }

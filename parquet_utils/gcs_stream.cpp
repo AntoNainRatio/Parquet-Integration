@@ -90,7 +90,7 @@ GCSOutputStream::GCSOutputStream(std::shared_ptr<google::cloud::storage::Client>
     closed_(false),
     position_(0)
 {
-    // Ouvre un flux d'écriture GCS immédiatement
+	// Opening the GCS write stream
     writer_ = std::make_unique<google::cloud::storage::ObjectWriteStream>(
         client_->WriteObject(bucket_, object_name_));
 }
