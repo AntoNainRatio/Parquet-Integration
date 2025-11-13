@@ -1,0 +1,37 @@
+name: Build parquet_utils
+
+on:
+  push:
+    paths:
+      - 'parquet_utils/**'
+      - '.github/workflows/test_parquet_utils.yml'
+  pull_request:
+    paths:
+      - 'parquet_utils/**'
+      - '.github/workflows/test_parquet_utils.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential cmake git
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: 'latest' # tu peux figer une version spécifique ici
+          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+
+      - name: Configure CMake with vcpkg
+        run: |
+          cmake -S parquet_utils -B build \
+                -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build parquet_utils
+        run: cmake --build build --config Release -j$(nproc)
