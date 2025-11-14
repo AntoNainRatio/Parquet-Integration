@@ -30,9 +30,9 @@ jobs:
 
       - name: Configure CMake with vcpkg
         run: |
-          cmake -S parquet_utils -B build \
+          cmake -S . -B build \
                 -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
                 -DCMAKE_BUILD_TYPE=Release
 
       - name: Build parquet_utils
-        run: cmake --build build --config Release -j$(nproc)
+        run: cmake --build build --config Release
