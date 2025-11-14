@@ -1,0 +1,19 @@
+{
+  "name": "parquet_utils",
+  "dependencies": [
+    {
+      "name": "arrow",
+      "default-features": true,
+      "features": [
+        "parquet" // Active le support Parquet dans Apache Arrow
+      ]
+    },
+    {
+      "name": "google-cloud-cpp",
+      "default-features": false,
+      "features": [
+        "storage" // Ajoute google_cloud_cpp_storage
+      ]
+    }
+  ]
+}
