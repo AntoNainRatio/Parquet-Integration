@@ -1,5 +1,5 @@
 {
-  "name": "parquet_utils",
+  "name": "parquet-utils",
   "dependencies": [
     {
       "name": "arrow",
