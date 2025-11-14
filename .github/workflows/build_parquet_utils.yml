@@ -28,6 +28,11 @@ jobs:
           vcpkgGitCommitId: '2d6a6cf3ac9a7cc93942c3d289a2f9c661a6f4a7'
           vcpkgDirectory: '${{ github.workspace }}/vcpkg'
 
+      - name: Install vcpkg packages
+        run: |
+          ${GITHUB_WORKSPACE}/vcpkg/vcpkg install --manifest
+
+
       - name: Configure CMake with vcpkg
         run: |
           cmake -S . -B build \
