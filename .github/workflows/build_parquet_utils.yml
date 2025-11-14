@@ -30,7 +30,7 @@ jobs:
 
       - name: Install vcpkg packages
         run: |
-          ${GITHUB_WORKSPACE}/vcpkg/vcpkg install --manifest
+          ${GITHUB_WORKSPACE}/vcpkg/vcpkg install
 
 
       - name: Configure CMake with vcpkg
