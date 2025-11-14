@@ -20,8 +20,8 @@ set(CMAKE_BUILD_TYPE Release)
 #set(CMAKE_PREFIX_PATH "${ARROW_HOME}")
 #set(CMAKE_MODULE_PATH "${ARROW_HOME}/lib/cmake/arrow" "${ARROW_HOME}/lib/cmake/parquet" ${CMAKE_MODULE_PATH})
 
-find_package(Arrow REQUIRED)
-find_package(Parquet REQUIRED)
+find_package(Arrow CONFIG REQUIRED)
+find_package(Parquet CONFIG REQUIRED)
 find_package(google_cloud_cpp_storage CONFIG REQUIRED)
 
 add_library (parquet_utils SHARED "parquet_utils.cpp" "parquet_utils.h"
