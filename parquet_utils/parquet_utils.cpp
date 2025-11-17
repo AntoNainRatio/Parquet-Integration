@@ -282,7 +282,7 @@ int parquetToCsv(const char* parquet_file, const char* prefix, const char* outpu
         for (auto& t : threads) t.join();
 
         auto total_end = high_resolution_clock::now();
-        std::cout << "Total execution time: " << duration_cast<milliseconds>(total_end - total_start) << std::endl;
+        std::cout << "Total execution time: " << duration_cast<milliseconds>(total_end - total_start).count() << std::endl;
 
     }
     catch (const std::exception& e) {
@@ -325,7 +325,7 @@ void merge_csv_files(const char* dir, const char* prefix, const char* output_fil
     }
     outfile.close();
     auto merge_end = high_resolution_clock::now();
-    std::cout << "Merge done in " << duration_cast<milliseconds>(merge_end - merge_start) << std::endl;
+    std::cout << "Merge done in " << duration_cast<milliseconds>(merge_end - merge_start).count() << std::endl;
 }
 
 bool delete_dir(const char* output_dir, const char* prefix) {
