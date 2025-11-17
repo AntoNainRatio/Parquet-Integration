@@ -24,15 +24,15 @@ jobs:
         with:
          vcpkgGitCommitId: '2d6a6cf3ac9a7cc93942c3d289a2f9c661a6f4a7'
 
-      - name: Install vcpkg packages
-        run: |
-            ${{ env.VCPKG_ROOT }}/vcpkg install arrow parquet google-cloud-cpp[storage]
+      - name: Install dependencies (manifest mode)
+        run: ${{ env.VCPKG_ROOT }}/vcpkg install
 
       - name: Configure CMake
         run: |
-            cmake -S . -B build \
-                -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake \
-                -DCMAKE_BUILD_TYPE=Release
+         cmake -S . -B build \
+         -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake \
+         -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
         run: cmake --build build --config Release
+
