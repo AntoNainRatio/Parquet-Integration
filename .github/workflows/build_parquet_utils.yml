@@ -1,15 +1,15 @@
 name: Build parquet_utils
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'parquet_utils/**'
-      - '.github/workflows/test_parquet_utils.yml'
+      - '.github/workflows/build_parquet_utils.yml'
   pull_request:
     paths:
       - 'parquet_utils/**'
-      - '.github/workflows/test_parquet_utils.yml'
-  workflow_dispatch:
+      - '.github/workflows/build_parquet_utils.yml'
 
 jobs:
   build:
@@ -18,21 +18,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install CMake + Ninja
+        uses: lukka/get-cmake@v3.30.1
 
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
-         vcpkgGitCommitId: '2d6a6cf3ac9a7cc93942c3d289a2f9c661a6f4a7'
+          vcpkgJsonGlob: 'vcpkg.json'
 
-      - name: Install dependencies (manifest mode)
-        run: ${{ env.VCPKG_ROOT }}/vcpkg install
+      - name: Configure (CMakePresets)
+        uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'default'
 
-      - name: Configure CMake
-        run: |
-         cmake -S . -B build \
-         -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake \
-         -DCMAKE_BUILD_TYPE=Release
-
-      - name: Build
-        run: cmake --build build --config Release
-
+      - name: Build parquet_utils
+        uses: lukka/run-cmake@v10
+        with:
+          buildPreset: 'default-build'
