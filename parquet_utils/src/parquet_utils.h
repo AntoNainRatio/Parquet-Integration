@@ -1,7 +1,7 @@
 #include <vector>
 
 extern "C" __declspec(dllexport)
-int parquetToCsv(const char* parquet_file, const char* prefix, const char* output_dir);
+int parquetToCsv(const char* parquet_file, const char* output_dir, const char* prefix);
 bool delete_dir(const char* output_dir, const char* prefix);
 
 extern "C" __declspec(dllexport)

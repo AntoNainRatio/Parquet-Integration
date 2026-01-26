@@ -1,33 +1,26 @@
-﻿
+﻿cmake_minimum_required(VERSION 3.20)
+project(parquet_utils LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 find_package(Arrow CONFIG REQUIRED)
 find_package(Parquet CONFIG REQUIRED)
 find_package(google_cloud_cpp_storage CONFIG REQUIRED)
 
-add_library (parquet_utils SHARED "parquet_utils.cpp" "parquet_utils.h"
-                        "job_handler.h" 
-                        "io_backend.cpp" "io_backend.h"  
-                        "gcs_stream.cpp" "gcs_stream.h")
+add_library (parquet_utils SHARED 
+             "src/parquet_utils.cpp" "src/parquet_utils.h"
+             "src/job_handler.h" 
+             "src/io_backend.cpp" "src/io_backend.h"  
+             "src/gcs_stream.cpp" "src/gcs_stream.h"
+            )
 
-#target_include_directories(parquet_utils PRIVATE
-#    ${ARROW_INCLUDE_DIR}
-#    ${CMAKE_CURRENT_SOURCE_DIR}/include
-#)
-
-#include_directories("${ARROW_HOME}/include")
-#link_directories("${ARROW_HOME}/lib")
-
-target_link_libraries(parquet_utils PRIVATE
+target_link_libraries(parquet_utils 
+    PRIVATE
         Arrow::arrow_shared
         Parquet::parquet_shared
         google-cloud-cpp::storage
 )
-
-#set_target_properties(parquet_utils PROPERTIES
-#    CXX_STANDARD 20
-#    PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/parquet_utils.h
-#    SOVERSION ${PROJECT_VERSION_MAJOR}
-#    VERSION ${PROJECT_VERSION}
-#)
 
 if(WIN32)
   set_target_properties(parquet_utils PROPERTIES
@@ -37,13 +30,5 @@ if(WIN32)
   )
 endif()
 
-
-
-target_include_directories(parquet_utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
-add_executable(main "main.cpp")
-target_link_libraries(main PRIVATE parquet_utils)
-#target_link_libraries(main PRIVATE
-#        Arrow::arrow_shared
-#        Parquet::parquet_shared
-#)
+add_executable(parquet_utils_main "src/main.cpp")
+target_link_libraries(parquet_utils_main PRIVATE parquet_utils)

@@ -219,7 +219,7 @@ int extract_chunk_index(const std::string& filename) {
 // each thread processes several row groups
 // row_groups per thread is set by total_row_groups / num_threads
 // this way work is divided by number of threads available
-int parquetToCsv(const char* parquet_file, const char* prefix, const char* output_dir) {
+int parquetToCsv(const char* parquet_file, const char* output_dir, const char* prefix) {
 
     auto total_start = high_resolution_clock::now();
     

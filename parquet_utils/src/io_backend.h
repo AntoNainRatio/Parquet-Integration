@@ -19,12 +19,11 @@ public:
 class LocalBackend : public StorageBackend {
 public:
     std::shared_ptr<arrow::io::RandomAccessFile> openInput(const std::string& path) override {
-        // OpenFile renvoie un arrow::Result<std::shared_ptr<ReadableFile>>
         arrow::Result<std::shared_ptr<arrow::io::ReadableFile>> result =
             arrow::io::ReadableFile::Open(path);
 
         if (!result.ok()) {
-            throw std::runtime_error("Erreur lors de l'ouverture du fichier en lecture : " +
+            throw std::runtime_error("Error while opening input of the file : " +
                 result.status().ToString());
         }
         return result.ValueOrDie();
@@ -35,7 +34,7 @@ public:
             arrow::io::FileOutputStream::Open(path);
 
         if (!result.ok()) {
-            throw std::runtime_error("Erreur lors de l'ouverture du fichier en écriture : " +
+            throw std::runtime_error("Error while opening output of the file : " +
                 result.status().ToString());
         }
         return result.ValueOrDie();
@@ -53,7 +52,6 @@ public:
         std::string object_name = extractObjectName(path);
         auto stream = std::make_shared<GCSInputStream>(client_, bucket_, object_name);
         return stream;
-        //throw std::runtime_error("GCSBackend::openInput not implemented yet");
     }
 
     std::shared_ptr<arrow::io::OutputStream> openOutput(const std::string& path) override {
@@ -64,8 +62,9 @@ public:
 
 private:
     std::string extractObjectName(const std::string& uri) {
-        // Convertit "gs://bucket/path/to/file.txt" en "path/to/file.txt"
+        // Usage: get "path/to/file.txt" from "gs://bucket/path/to/file.txt"
         if (uri.rfind("gs://", 0) == 0) {
+            // find the first '/' after "gs://"
             size_t first_slash = uri.find('/', 5);
             if (first_slash == std::string::npos) return "";
             return uri.substr(first_slash + 1);
