@@ -3,6 +3,7 @@
 This is the work I have done during an internship in Orange.
 
 The goal is to make **Khiops** able to read Parquet files which is a compressed file format.
+Before going for changing Khiops itself, my task was to see if we it's possible to integrate **Parquet** externally.
 The way we choose to do it, was to convert a Parquet file into a CSV one before giving it to Khiops who already know how to read CSV files.
 
 ## Here are the work:
