@@ -6,17 +6,26 @@
 #include <memory>
 
 int main(int argc, char** argv) {
-    if (argc != 3) {
+    if (argc != 3 && argc != 1) {
         std::cerr << "Usage: " << argv[0] << " <input.csv> <output.parquet>" << std::endl;
         return 1;
     }
 
-    std::string input_file = argv[1];
-    std::string output_file = argv[2];
+    std::string input_file;
+    std::string output_file;
+
+    if (argc == 3) {
+        input_file = argv[1];
+		output_file = argv[2];
+    }
+    else {
+		input_file = "C:/Users/KXFJ3896/Documents/parquet_reader/data/toto.txt";
+		output_file = "C:/Users/KXFJ3896/Documents/parquet_reader/data/toto.parquet";
+    }
 
     try {
         // --- Ouvrir le CSV en entrée
-        ARROW_ASSIGN_OR_RAISE(auto infile,
+        PARQUET_ASSIGN_OR_THROW(auto infile,
             arrow::io::ReadableFile::Open(input_file));
 
         // Options de lecture CSV
@@ -26,7 +35,7 @@ int main(int argc, char** argv) {
         auto convert_options = arrow::csv::ConvertOptions::Defaults();
 
         // Créer le lecteur de batch CSV
-        ARROW_ASSIGN_OR_RAISE(
+        PARQUET_ASSIGN_OR_THROW(
             auto csv_reader,
             arrow::csv::StreamingReader::Make(
                 arrow::io::default_io_context(),
@@ -38,7 +47,7 @@ int main(int argc, char** argv) {
         );
 
         // --- Préparer la sortie Parquet
-        ARROW_ASSIGN_OR_RAISE(auto outfile,
+        PARQUET_ASSIGN_OR_THROW(auto outfile,
             arrow::io::FileOutputStream::Open(output_file));
 
         std::shared_ptr<parquet::arrow::FileWriter> parquet_writer;
@@ -57,13 +66,13 @@ int main(int argc, char** argv) {
 
             if (first_batch) {
                 // Init writer Parquet avec le schéma du 1er batch
-                PARQUET_THROW_NOT_OK(parquet::arrow::FileWriter::Open(
+                parquet::arrow::FileWriter::Open(
                     *batch->schema(),
                     arrow::default_memory_pool(),
                     outfile,
-                    parquet::WriterProperties::Builder().build(),
-                    &parquet_writer
-                ));
+                    parquet::WriterProperties::Builder().build()//,
+                    //&parquet_writer
+                );
                 first_batch = false;
             }
 

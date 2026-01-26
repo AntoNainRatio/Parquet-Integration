@@ -1,2 +1,7 @@
 *out*
 *.vs*
+*.xlxs
+*.log
+*.tmp
+*vcpkg*
+*/libs/*

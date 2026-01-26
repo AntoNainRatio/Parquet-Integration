@@ -326,7 +326,7 @@ void* driver_fopen(const char* filename, char mode) {
 
 	char* valid_path = (char*)malloc((strlen(globbing_path) + 2) * sizeof(char));
 	if (valid_path == NULL) {
-		LogError("driver_getFileSize: unable to malloc to add \':\' to path");
+		LogError("driver_fopen: unable to malloc to add \':\' to path");
 		return NULL;
 	}
 

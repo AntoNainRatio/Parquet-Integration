@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
 	const char* filename = "C:/Users/Public/khiops_data/samples/AccidentsMedium/Vehicles.parquet";
 	//const char* filename = "gs://test-parquet-khiops/parquet_data/Medium/Users_medium.parquet";
 
-	const char* output_dir = "C:/Users/KXFJ3896/Documents/parquet_utils/Vehicles";
+	const char* output_dir = "C:/Users/KXFJ3896/Documents/Parquet-Integration/parquet_utils/Vehicles";
 	//const char* output_dir = "gs://test-parquet-khiops/output_data/Users_medium";
 
 	const char* prefix = "toto";

@@ -1,0 +1,46 @@
+driver_getFileSize
+  Appels               : 121
+  Total (ms)           : 118302
+  Portion du total     : 41.79 %
+  Moyenne (ms)         : 977.70
+  Variance             : 1970516.89
+  Écart-type           : 1403.75
+  Min / Max            : 110 / 3914
+
+driver_fopen
+  Appels               : 111
+  Total (ms)           : 110369
+  Portion du total     : 38.99 %
+  Moyenne (ms)         : 994.32
+  Variance             : 2027956.42
+  Écart-type           : 1424.06
+  Min / Max            : 121 / 3804
+
+driver_fseek
+  Appels               : 437
+  Total (ms)           : 305
+  Portion du total     : 0.11 %
+  Moyenne (ms)         : 0.70
+  Variance             : 0.93
+  Écart-type           : 0.97
+  Min / Max            : 0 / 6
+
+driver_fread
+  Appels               : 594
+  Total (ms)           : 51945
+  Portion du total     : 18.35 %
+  Moyenne (ms)         : 87.45
+  Variance             : 12296.04
+  Écart-type           : 110.89
+  Min / Max            : 2 / 566
+
+driver_fclose
+  Appels               : 111
+  Total (ms)           : 2168
+  Portion du total     : 0.77 %
+  Moyenne (ms)         : 19.53
+  Variance             : 833.25
+  Écart-type           : 28.87
+  Min / Max            : 0 / 87
+
+Total (ms) : 283089
