@@ -11,7 +11,7 @@ The base used to implement this driver was the ["Null Driver"](https://github.co
 The algorithm used is pretty simple and you will understand it pretty easily with the structure and the comments provided in the code.
 
 **Khiops** verify the scheme and the path of the file. It seems that **Khiops** considered that if there's more than one ':' character, it's an invalid path.
-To bypass this, we didn't put the ':' after the Hard Drive letter. For example, instead of writing `multifile:////C://path//to//file`, we write `multifile:////C//path//to//file`.
+To bypass this, we didn't put the ':' after the Hard Drive letter. For example, instead of writing `multifile://C:/path/to/file`, we write `multifile://C/path/to/file`.
 This way, **Khiops** will consider the path as valid and in the driver , we will add back the ':' after the Hard Drive letter.
 
 The Khiops team is aware of this issue and I told me to bypass it for the POC.
