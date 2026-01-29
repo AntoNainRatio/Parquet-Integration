@@ -5,6 +5,8 @@ The benchmarks focus on measuring the performance of the C++ code in terms of ex
 
 I will considered each conversion chronologically to show the improvements made over time.
 
+## Process
+
 1. **Initial Implementation** (Mono.cpp)
 
 Same implementation as the Python one but in C++. It reads a Parquet file and writes a CSV file.
@@ -52,3 +54,7 @@ The merge was still slowing the process down. Without it, the execution time is 
 We thought about considering the intermediate files as a multifile. Khiops is able to read multifile on Clouds, so we know that this multifile structure will work with Khiops.
 There isn't any driver that reads multifile locally.
 If we create a multifile driver reading locally, Khiops will be able to use CSV multifiles comming from Parquet files. 
+
+## Cleaner Implementation
+
+You can find the cleaner implementation of our final version [here](https://github.com/AntoNainRatio/Parquet-Integration/tree/main/parquet_utils).
