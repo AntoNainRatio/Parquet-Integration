@@ -62,13 +62,15 @@ void worker(StorageBackend& input_backend, StorageBackend& output_backend, const
             std::ostringstream filename;
             filename << output_dir << "/" << prefix << job.start << ".txt";
             
+            // opening sriting stream via backend
+			// this way we can choose backend according to the path
 			auto outfile = output_backend.openOutput(filename.str());
 
             arrow::csv::WriteOptions write_options = arrow::csv::WriteOptions::Defaults();
-            write_options.include_header = (job.start == 0);
+			write_options.include_header = (job.start == 0);                // include header only for the first chunk
             write_options.delimiter = delimiter;
             write_options.null_string = "";
-            write_options.quoting_style = arrow::csv::QuotingStyle::Needed;
+			write_options.quoting_style = arrow::csv::QuotingStyle::Needed; // this flag puts quotes to all non-numeric values
 
             for (int rg = job.start; rg < job.end; rg++) {
                 std::shared_ptr<arrow::Table> table;
@@ -96,8 +98,8 @@ bool isQuotingNeeded(const std::string& value, const char separator) {
     return false;
 }
 
-// worker processing jobs from the queue (manual CSV writing with minimal quoting)
-void worker_gpt(std::shared_ptr<arrow::io::ReadableFile> infile,
+// worker processing jobs from the queue (manual CSV writing with real minimal quoting)
+void worker_own_quoting(std::shared_ptr<arrow::io::ReadableFile> infile,
     JobQueue& queue,
     std::mutex& chunk_mutex,
     std::string& prefix,
@@ -254,7 +256,7 @@ int parquetToCsv(const char* parquet_file, const char* output_dir, const char* p
         }
 
 
-        // creating dir if doesn't exist
+        // TODO: creating dir if doesn't exist
         // fs::create_directories(output_dir);
 
         std::vector<std::thread> threads;
@@ -266,7 +268,7 @@ int parquetToCsv(const char* parquet_file, const char* output_dir, const char* p
 
         // starting worker threads
         for (int i = 0; i < num_threads; i++) {
-            threads.emplace_back(worker,
+			threads.emplace_back(worker,  // replace here the worker_own_quoting to use custom minimal quoting
                 std::ref(*input_backend),
                 std::ref(*output_backend),
                 std::ref(parquet_file_string),
@@ -328,6 +330,8 @@ void merge_csv_files(const char* dir, const char* prefix, const char* output_fil
     std::cout << "Merge done in " << duration_cast<milliseconds>(merge_end - merge_start).count() << std::endl;
 }
 
+// function deleting directory only if all files inside start with the given prefix and end with .txt
+// prevents accidental deletion of important data
 bool delete_dir(const char* output_dir, const char* prefix) {
     std::filesystem::path search_path = std::filesystem::path(output_dir);
 	std::string pattern = std::string(prefix);
@@ -337,6 +341,7 @@ bool delete_dir(const char* output_dir, const char* prefix) {
     for (const auto& entry : std::filesystem::directory_iterator(search_path)) {
         if (entry.is_regular_file()) {
             const std::string& filename = entry.path().filename().string();
+
 			// Check if the filename starts with the given prefix and ends with .txt
             if (filename.rfind(pattern, 0) == 0 && filename.size() > pattern.size() && filename.substr(filename.size() - 4) == ".txt") {
                 continue;
