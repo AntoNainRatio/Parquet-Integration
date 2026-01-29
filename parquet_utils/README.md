@@ -34,7 +34,7 @@ cmake --build build --target parquet_utils
 
 ## How to use it
 
-You can check `src/main.cp` for an example of usage.
+You can check `src/main.cpp` for an example of usage.
 
 ## Implementation Details
 
@@ -56,6 +56,6 @@ This POC was working but needed disk space to write the multifile CSV before com
 That's why we implemented a backend for this conversion. It's able to stream the data from or to multiple sources (local disk, GCS, S3, etc...).
 For the moment, only GCS and local disk are implemented. But adding a new source is really easy.
 We just need to implement the `RandomAccessFile` and `OutputStream` interfaces from Arrow for the new source.
-You can find examples of implementation in `src/gcs_stream\*` and `src/io_backend.\*`.
+You can find examples of implementation in `src/gcs_stream.*` and `src/io_backend.*`.
 
-Examples of usage can be found in `src/main.cp`.
+Examples of usage can be found in `src/main.cpp`.
